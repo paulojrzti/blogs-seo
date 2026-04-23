@@ -17,7 +17,7 @@ const inactive = 'opacity-[0.82] hover:bg-slate-50 hover:opacity-100';
 ---
 
 <div
-  class="inline-flex items-center gap-0.5 rounded-full border border-slate-200/90 bg-white p-0.5 shadow-sm ring-1 ring-slate-900/5"
+  class="inline-flex items-center gap-0.5 rounded-full border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/80 p-0.5 shadow-sm ring-1 ring-slate-900/5"
   role="group"
   aria-label="Idioma"
 >
@@ -27,14 +27,14 @@ const inactive = 'opacity-[0.82] hover:bg-slate-50 hover:opacity-100';
     aria-current={current === 'pt' ? 'page' : undefined}
     title="Português"
     class:list={[
-      'inline-flex items-center justify-center rounded-full px-1.5 py-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+      'inline-flex items-center gap-1.5 rounded-full px-2 py-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
       current === 'pt' ? active : inactive,
     ]}
   >
     <span class="sr-only">Português</span>
     <!-- Brasil -->
     <svg
-      class="pointer-events-none h-[1.125rem] w-[1.6rem] overflow-hidden rounded-[3px] shadow-inner ring-1 ring-black/10"
+      class="pointer-events-none h-5 w-[1.75rem] shrink-0 overflow-hidden rounded-[3px] shadow-inner ring-1 ring-black/10"
       viewBox="0 0 22 15"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -43,6 +43,11 @@ const inactive = 'opacity-[0.82] hover:bg-slate-50 hover:opacity-100';
       <path d="M11 1.35 18.95 7.5 11 13.65 3.05 7.5z" fill="#ffdf00"></path>
       <circle cx="11" cy="7.5" r="3.35" fill="#002776"></circle>
     </svg>
+    <span
+      class:list={[
+        'text-xs font-semibold tracking-wide',
+        current === 'pt' ? 'text-blue-800' : 'text-slate-600',
+      ]}>PT</span>
   </a>
   <a
     href={enHref}
@@ -50,14 +55,14 @@ const inactive = 'opacity-[0.82] hover:bg-slate-50 hover:opacity-100';
     aria-current={current === 'en' ? 'page' : undefined}
     title="English"
     class:list={[
-      'inline-flex items-center justify-center rounded-full px-1.5 py-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+      'inline-flex items-center gap-1.5 rounded-full px-2 py-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
       current === 'en' ? active : inactive,
     ]}
   >
     <span class="sr-only">English</span>
     <!-- Estados Unidos -->
     <svg
-      class="pointer-events-none h-[1.125rem] w-[1.6rem] overflow-hidden rounded-[3px] shadow-inner ring-1 ring-black/10"
+      class="pointer-events-none h-5 w-[1.75rem] shrink-0 overflow-hidden rounded-[3px] shadow-inner ring-1 ring-black/10"
       viewBox="0 0 22 15"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -69,5 +74,10 @@ const inactive = 'opacity-[0.82] hover:bg-slate-50 hover:opacity-100';
       ></path>
       <rect width="9.4" height="8.05" fill="#3c3b6e"></rect>
     </svg>
+    <span
+      class:list={[
+        'text-xs font-semibold tracking-wide',
+        current === 'en' ? 'text-blue-800' : 'text-slate-600',
+      ]}>EN</span>
   </a>
 </div>
