@@ -40,14 +40,29 @@ function getCookie(req: Request, name: string): string | undefined {
   return undefined;
 }
 
+function normalizePath(pathname: string): string {
+  if (pathname.length > 1 && pathname.endsWith('/')) return pathname.slice(0, -1);
+  return pathname;
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
+    const path = normalizePath(url.pathname);
 
-    if (url.pathname === '/auth') {
+    if (path === '/auth') {
+      const id = env.GITHUB_CLIENT_ID?.trim();
+      const secret = env.GITHUB_CLIENT_SECRET?.trim();
+      if (!id || !secret || id === 'undefined') {
+        return new Response(
+          'Worker sem secrets: define GITHUB_CLIENT_ID e GITHUB_CLIENT_SECRET com wrangler secret put (na pasta workers/decap-oauth), depois wrangler deploy.',
+          { status: 500, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+        );
+      }
+
       const state = randomState();
       const gh = new URL('https://github.com/login/oauth/authorize');
-      gh.searchParams.set('client_id', env.GITHUB_CLIENT_ID);
+      gh.searchParams.set('client_id', id);
       gh.searchParams.set('redirect_uri', `${url.origin}/callback`);
       gh.searchParams.set('scope', 'repo,user');
       gh.searchParams.set('state', state);
@@ -61,7 +76,7 @@ export default {
       });
     }
 
-    if (url.pathname === '/callback') {
+    if (path === '/callback') {
       const code = url.searchParams.get('code');
       const state = url.searchParams.get('state');
       const cookieState = getCookie(req, 'oauth_state');
@@ -81,8 +96,8 @@ export default {
           'User-Agent': 'decap-oauth-worker',
         },
         body: JSON.stringify({
-          client_id: env.GITHUB_CLIENT_ID,
-          client_secret: env.GITHUB_CLIENT_SECRET,
+          client_id: env.GITHUB_CLIENT_ID!.trim(),
+          client_secret: env.GITHUB_CLIENT_SECRET!.trim(),
           code,
         }),
       });
@@ -111,8 +126,19 @@ export default {
       );
     }
 
-    if (url.pathname === '/health') return new Response('ok');
+    if (path === '/health') return new Response('ok');
 
-    return new Response('Decap OAuth broker — rotas: /auth, /callback', { status: 404 });
+    if (path === '/') {
+      return new Response(
+        [
+          'Decap OAuth (Cloudflare Worker) — não é o site.',
+          'Rotas: GET /health, GET /auth, GET /callback',
+          'Para ver o blog Astro localmente: na raiz do projeto rode npm run dev e abra http://localhost:4321',
+        ].join('\n'),
+        { headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+      );
+    }
+
+    return new Response('Decap OAuth broker — rotas: /, /auth, /callback, /health', { status: 404 });
   },
 } satisfies ExportedHandler<Env>;
