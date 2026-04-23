@@ -73,11 +73,33 @@ const finance_en = defineCollection({ type: 'content', schema: BlogPostSchema })
 const fitness_pt = defineCollection({ type: 'content', schema: BlogPostSchema });
 const fitness_en = defineCollection({ type: 'content', schema: BlogPostSchema });
 
+const categories = defineCollection({
+  type: 'data',
+  schema: z.object({
+    niche: z.string().min(1),
+    slug_pt: z.string().regex(/^[a-z0-9-]+$/, 'Apenas letras minúsculas, números e hífens'),
+    slug_en: z.string().regex(/^[a-z0-9-]+$/, 'Apenas letras minúsculas, números e hífens'),
+    label_pt: z.string().min(2),
+    label_en: z.string().min(2),
+  }),
+});
+
+const niches = defineCollection({
+  type: 'data',
+  schema: z.object({
+    niche_id: z.string().regex(/^[a-z0-9-]+$/, 'Apenas letras minúsculas, números e hífens'),
+    label_pt: z.string().min(2),
+    label_en: z.string().min(2),
+  }),
+});
+
 export const collections = {
   finance_pt,
   finance_en,
   fitness_pt,
   fitness_en,
+  categories,
+  niches,
 };
 
 export type CollectionKey = keyof typeof collections;

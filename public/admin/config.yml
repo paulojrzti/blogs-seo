@@ -25,12 +25,105 @@ slug:
   sanitize_replacement: "-"
 
 collections:
+
   # =========================================================
-  # FINANCE — PT
+  # NICHOS — registo de novos nichos
+  # =========================================================
+  - name: "niches"
+    label: "Nichos (temas principais)"
+    label_singular: "Nicho"
+    description: >
+      Um nicho é um grande tema do site, como Finanças ou Fitness.
+      Registe aqui novos nichos que queira adicionar no futuro.
+      ATENÇÃO: registar um nicho aqui não cria automaticamente as páginas —
+      é necessário avisar o administrador do site para completar a configuração técnica.
+    folder: "src/content/niches"
+    create: true
+    extension: "yml"
+    format: "yaml"
+    identifier_field: "niche_id"
+    slug: "{{niche_id}}"
+    fields:
+      - label: "ID do Nicho"
+        name: "niche_id"
+        widget: "string"
+        hint: >
+          Identificador único do nicho, escrito em inglês, só letras minúsculas e sem espaços.
+          Será usado internamente pelo sistema. Exemplos: technology, travel, cooking.
+          NUNCA use acentos ou espaços aqui.
+      - label: "Nome em Português"
+        name: "label_pt"
+        widget: "string"
+        hint: "Nome do nicho como vai aparecer no site em português. Exemplo: Tecnologia, Viagens, Culinária."
+      - label: "Nome em Inglês"
+        name: "label_en"
+        widget: "string"
+        hint: "Nome do nicho como vai aparecer no site em inglês. Exemplo: Technology, Travel, Cooking."
+
+  # =========================================================
+  # CATEGORIAS — registo de novas categorias
+  # =========================================================
+  - name: "categories"
+    label: "Categorias"
+    label_singular: "Categoria"
+    description: >
+      As categorias organizam os artigos dentro de cada nicho.
+      Por exemplo, dentro de Finanças temos as categorias Investimentos, Cripto, etc.
+      Registe aqui novas categorias. Após salvar, avise o administrador para
+      que a categoria apareça no menu e nas opções de criação de artigo.
+    folder: "src/content/categories"
+    create: true
+    extension: "yml"
+    format: "yaml"
+    identifier_field: "slug_pt"
+    slug: "{{niche}}-{{slug_pt}}"
+    fields:
+      - label: "Nicho"
+        name: "niche"
+        widget: "select"
+        hint: >
+          Em qual grande tema esta categoria se encaixa?
+          Finanças agrupa temas de dinheiro e investimento.
+          Fitness agrupa temas de saúde e exercício.
+          Se criou um nicho novo, o ID dele deve ser adicionado aqui pela equipe técnica.
+        options:
+          - { label: "Finanças (finance)", value: "finance" }
+          - { label: "Fitness (fitness)", value: "fitness" }
+      - label: "Slug em Português (URL)"
+        name: "slug_pt"
+        widget: "string"
+        hint: >
+          Nome da categoria que vai aparecer no endereço (URL) do site em português.
+          Use apenas letras minúsculas e hífens, sem acentos ou espaços.
+          Exemplos: renda-variavel, planejamento-financeiro, treino-funcional.
+        pattern: ['^[a-z0-9-]+$', 'Apenas letras minúsculas, números e hífens']
+      - label: "Slug em Inglês (URL)"
+        name: "slug_en"
+        widget: "string"
+        hint: >
+          Nome da categoria na URL do site em inglês.
+          Use apenas letras minúsculas e hífens.
+          Exemplos: stocks, financial-planning, functional-training.
+        pattern: ['^[a-z0-9-]+$', 'Apenas letras minúsculas, números e hífens']
+      - label: "Nome visível em Português"
+        name: "label_pt"
+        widget: "string"
+        hint: "Nome da categoria como vai aparecer no menu e nas páginas em português. Pode ter acentos. Exemplo: Renda Variável, Planejamento Financeiro."
+      - label: "Nome visível em Inglês"
+        name: "label_en"
+        widget: "string"
+        hint: "Nome da categoria como vai aparecer no menu e nas páginas em inglês. Exemplo: Stocks, Financial Planning."
+
+  # =========================================================
+  # FINANÇAS — PT
   # =========================================================
   - name: "finance_pt"
-    label: "Finanças (PT)"
-    label_singular: "Post de Finanças (PT)"
+    label: "Finanças — Artigos em Português"
+    label_singular: "Artigo de Finanças (PT)"
+    description: >
+      Aqui ficam todos os artigos do nicho Finanças escritos em português.
+      Preencha todos os campos obrigatórios antes de publicar.
+      Os campos de SEO são fundamentais para o artigo aparecer bem no Google.
     folder: "src/content/finance_pt"
     create: true
     extension: "mdx"
@@ -38,12 +131,26 @@ collections:
     slug: "{{slug}}"
     preview_path: "pt/finance/{{category}}/{{slug}}"
     fields:
-      - { label: "Idioma", name: "language", widget: "hidden", default: "pt" }
+      - label: "Idioma"
+        name: "language"
+        widget: "hidden"
+        default: "pt"
+
       - label: "Categoria"
         name: "category"
         widget: "select"
-        options: ["investimentos", "renda-fixa", "renda-variavel", "cripto", "planejamento-financeiro"]
-      - label: "Tradução de (slug EN)"
+        hint: >
+          Escolha a categoria que melhor descreve o assunto do artigo.
+          A categoria determina em qual seção do site o artigo será publicado e afeta o endereço (URL).
+          Se a categoria que precisa não está na lista, cadastre-a primeiro no menu 'Categorias'.
+        options:
+          - { label: "Investimentos", value: "investimentos" }
+          - { label: "Renda Fixa (CDBs, Tesouro Direto...)", value: "renda-fixa" }
+          - { label: "Renda Variável (Ações, ETFs...)", value: "renda-variavel" }
+          - { label: "Criptomoedas", value: "cripto" }
+          - { label: "Planejamento Financeiro", value: "planejamento-financeiro" }
+
+      - label: "Artigo traduzido de (versão em inglês)"
         name: "translation_of"
         widget: "relation"
         collection: "finance_en"
@@ -51,54 +158,239 @@ collections:
         value_field: "slug"
         display_fields: ["title"]
         required: false
-      - { label: "Título", name: "title", widget: "string", pattern: ['.{10,70}', '10 a 70 caracteres'] }
-      - { label: "Resumo (excerpt)", name: "excerpt", widget: "text", pattern: ['.{80,200}', '80 a 200 caracteres'] }
-      - { label: "Imagem destacada", name: "featured_image", widget: "image" }
-      - { label: "ALT da imagem", name: "featured_image_alt", widget: "string" }
-      - { label: "SEO Title", name: "seo_title", widget: "string", pattern: ['.{10,60}', '10 a 60 caracteres'] }
-      - { label: "SEO Description", name: "seo_description", widget: "text", pattern: ['.{120,160}', '120 a 160 caracteres'] }
-      - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "draft" }
+        hint: >
+          Se este artigo é a versão em português de um artigo já existente em inglês,
+          selecione aqui o artigo original. Isso ajuda o Google a entender que são o mesmo conteúdo
+          em idiomas diferentes e melhora o posicionamento internacional. Deixe em branco se for um artigo novo.
+
+      - label: "Título do Artigo"
+        name: "title"
+        widget: "string"
+        hint: >
+          O título principal do artigo, que aparece no topo da página e nas redes sociais.
+          Use entre 10 e 70 caracteres. Seja direto e inclua a palavra-chave principal.
+          Exemplo: 'Os Melhores ETFs para Investir em 2026'.
+        pattern: ['.{10,70}', 'O título deve ter entre 10 e 70 caracteres']
+
+      - label: "Resumo do Artigo (Excerpt)"
+        name: "excerpt"
+        widget: "text"
+        hint: >
+          Um resumo curto que aparece nos cards de listagem e pode ser usado em redes sociais.
+          Deve explicar em 1 ou 2 frases o que o leitor vai aprender. Use entre 80 e 200 caracteres.
+          Inclua a palavra-chave principal. Exemplo: 'Análise dos ETFs mais rentáveis de 2026, comparando taxas, liquidez e desempenho histórico.'
+        pattern: ['.{80,200}', 'O resumo deve ter entre 80 e 200 caracteres']
+
+      - label: "Imagem de Capa"
+        name: "featured_image"
+        widget: "image"
+        hint: >
+          Imagem principal do artigo, exibida no topo do post e nos links compartilhados.
+          Use imagens em formato JPG ou PNG, com pelo menos 1200×630 pixels para boa aparência nas redes sociais.
+          Evite imagens com muito texto.
+
+      - label: "Descrição da Imagem (ALT)"
+        name: "featured_image_alt"
+        widget: "string"
+        hint: >
+          Texto alternativo que descreve a imagem para pessoas com deficiência visual e para o Google.
+          Descreva o que está na imagem de forma objetiva.
+          Exemplo: 'Gráfico mostrando a evolução dos melhores ETFs de 2026'.
+          Obrigatório para SEO e acessibilidade.
+
+      - label: "Título SEO (para o Google)"
+        name: "seo_title"
+        widget: "string"
+        hint: >
+          Título que aparece na aba do navegador e nos resultados do Google — pode ser diferente do título do artigo.
+          Ideal: entre 50 e 60 caracteres. Inclua a palavra-chave principal no início.
+          Exemplo: 'Melhores ETFs 2026: Guia Completo para Investir'.
+        pattern: ['.{10,60}', 'O título SEO deve ter entre 10 e 60 caracteres']
+
+      - label: "Descrição SEO (Meta Description)"
+        name: "seo_description"
+        widget: "text"
+        hint: >
+          Texto que o Google exibe por baixo do título nos resultados de busca.
+          É sua chance de convencer o leitor a clicar. Use entre 120 e 160 caracteres.
+          Inclua a palavra-chave, explique o benefício e finalize com um convite à ação.
+          Exemplo: 'Descubra os melhores ETFs para investir em 2026. Comparamos taxas, liquidez e rentabilidade para você tomar a melhor decisão.'
+        pattern: ['.{120,160}', 'A descrição SEO deve ter entre 120 e 160 caracteres']
+
+      - label: "Status de Publicação"
+        name: "status"
+        widget: "select"
+        hint: >
+          Rascunho: o artigo está sendo escrito e não aparece no site.
+          Publicado: o artigo está visível para todos os visitantes.
+          Comece sempre como Rascunho e mude para Publicado apenas quando estiver revisado.
+        options:
+          - { label: "Rascunho (não publicado)", value: "draft" }
+          - { label: "Publicado (visível no site)", value: "published" }
+        default: "draft"
+
       - label: "Autor"
         name: "author"
         widget: "object"
+        hint: "Informações de quem escreveu o artigo. O nome do autor aparece no rodapé do post e ajuda na credibilidade (E-E-A-T do Google)."
         fields:
-          - { label: "Nome", name: "name", widget: "string", default: "Equipe Editorial" }
-          - { label: "URL", name: "url", widget: "string", required: false }
-          - { label: "Avatar", name: "avatar", widget: "image", required: false }
-      - { label: "Data de publicação", name: "publish_date", widget: "datetime" }
-      - { label: "Data de atualização", name: "updated_date", widget: "datetime", required: false }
-      - { label: "Canonical URL", name: "canonical_url", widget: "string", required: false }
-      - { label: "No-index", name: "noindex", widget: "boolean", default: false }
-      - { label: "É pilar do silo?", name: "pillar", widget: "boolean", default: false }
-      - { label: "Pilar de (slug do pilar)", name: "pillar_of", widget: "string", required: false }
-      - { label: "Relacionados (slugs)", name: "related", widget: "list", required: false, default: [] }
-      - { label: "Tags", name: "tags", widget: "list", required: false, default: [] }
-      - { label: "Ads habilitados", name: "ad_slots_enabled", widget: "boolean", default: true }
-      - { label: "Disclosure de afiliados", name: "affiliate_disclosure", widget: "boolean", default: false }
-      - label: "FAQ (Rich Snippet Schema.org)"
+          - label: "Nome do Autor"
+            name: "name"
+            widget: "string"
+            default: "Equipe Editorial"
+            hint: "Nome completo ou nome editorial. Aparece na página do artigo."
+          - label: "Link do Autor (opcional)"
+            name: "url"
+            widget: "string"
+            required: false
+            hint: "Endereço do perfil do autor (LinkedIn, site pessoal, etc.). Deixe em branco se não tiver."
+          - label: "Foto do Autor (opcional)"
+            name: "avatar"
+            widget: "image"
+            required: false
+            hint: "Foto de perfil do autor. Recomendado: imagem quadrada de pelo menos 200×200 pixels."
+
+      - label: "Data de Publicação"
+        name: "publish_date"
+        widget: "datetime"
+        hint: "Data em que o artigo foi ou será publicado. Aparece no post e é usada pelo Google para ordenar conteúdo recente."
+
+      - label: "Data da Última Atualização (opcional)"
+        name: "updated_date"
+        widget: "datetime"
+        required: false
+        hint: "Se o artigo foi revisado ou atualizado, coloque aqui a data da última versão. Artigos atualizados tendem a rankear melhor."
+
+      - label: "URL Canônica (opcional — avançado)"
+        name: "canonical_url"
+        widget: "string"
+        required: false
+        hint: >
+          Deixe em branco na maioria dos casos — o site define automaticamente.
+          Preencha apenas se este artigo foi publicado originalmente em outro site
+          e você quer indicar ao Google qual é o endereço 'oficial' do conteúdo.
+
+      - label: "Ocultar do Google (No-index)"
+        name: "noindex"
+        widget: "boolean"
+        default: false
+        hint: >
+          Quando ativado, pede ao Google para NÃO indexar este artigo (ele não aparecerá nas buscas).
+          Use apenas para rascunhos, páginas internas ou conteúdo que não deve aparecer no Google.
+          Na maioria dos casos, deixe DESATIVADO.
+
+      - label: "É o artigo pilar da categoria?"
+        name: "pillar"
+        widget: "boolean"
+        default: false
+        hint: >
+          Artigos pilar são os guias mais completos de um tema — o conteúdo de referência da categoria.
+          Cada categoria deve ter apenas UM artigo pilar.
+          Ative esta opção para o artigo principal e deixe desativado nos demais.
+
+      - label: "É filho do pilar (slug do artigo pilar)"
+        name: "pillar_of"
+        widget: "string"
+        required: false
+        hint: >
+          Se este artigo aprofunda um subtópico de um artigo pilar, coloque aqui o slug (endereço)
+          do artigo pilar ao qual ele pertence. Isso cria links automáticos entre os artigos.
+          Exemplo: se o pilar é 'guia-completo-etfs', escreva exatamente 'guia-completo-etfs'.
+          Deixe em branco se o artigo for independente.
+
+      - label: "Artigos Relacionados (slugs)"
+        name: "related"
+        widget: "list"
+        required: false
+        default: []
+        hint: >
+          Lista de slugs (endereços) de outros artigos do site que têm relação com este.
+          Estes artigos aparecem na seção 'Leia também' no final do post.
+          Escreva apenas o slug, sem o endereço completo.
+          Exemplo: melhores-etfs-2026, como-investir-em-acoes.
+
+      - label: "Tags (palavras-chave)"
+        name: "tags"
+        widget: "list"
+        required: false
+        default: []
+        hint: >
+          Palavras ou frases que descrevem o conteúdo do artigo, separadas por vírgula.
+          Ajudam a organizar o conteúdo internamente.
+          Exemplos: ETF, investimento, renda variável, 2026.
+
+      - label: "Exibir anúncios neste artigo?"
+        name: "ad_slots_enabled"
+        widget: "boolean"
+        default: true
+        hint: >
+          Quando ativado, o Google AdSense pode exibir anúncios ao longo do artigo.
+          Desative apenas se o artigo não for adequado para anúncios ou em páginas especiais.
+
+      - label: "Exibir aviso de links de afiliados?"
+        name: "affiliate_disclosure"
+        widget: "boolean"
+        default: false
+        hint: >
+          Ative se o artigo contém links de afiliados (links que geram comissão quando o leitor compra algo).
+          O aviso é obrigatório por lei em muitos países e aumenta a confiança do leitor.
+          Deixe desativado se o artigo não tiver links de afiliados.
+
+      - label: "Perguntas Frequentes — FAQ (opcional)"
         name: "faq"
         widget: "list"
         required: false
+        hint: >
+          Adicione perguntas e respostas sobre o tema do artigo.
+          O FAQ aparece no final do post E pode aparecer em destaque no Google (Rich Snippet),
+          aumentando a visibilidade. Recomendado: mínimo de 3 pares de pergunta/resposta.
+          As perguntas devem ser dúvidas reais que o leitor teria sobre o tema.
         fields:
-          - { label: "Pergunta", name: "question", widget: "string" }
-          - { label: "Resposta", name: "answer", widget: "text" }
-      - label: "CTA"
+          - label: "Pergunta"
+            name: "question"
+            widget: "string"
+            hint: "Escreva a pergunta como o leitor faria. Exemplo: Qual é o melhor ETF para iniciantes?"
+          - label: "Resposta"
+            name: "answer"
+            widget: "text"
+            hint: "Responda de forma clara e direta, em 2 a 5 frases. Evite termos muito técnicos."
+
+      - label: "Botão de Chamada para Ação — CTA (opcional)"
         name: "cta"
         widget: "object"
         required: false
+        hint: >
+          Um botão de destaque que aparece no artigo para direcionar o leitor a uma ação:
+          abrir uma conta, baixar um material, ver uma oferta, etc.
+          Deixe em branco se não quiser exibir um botão.
         fields:
-          - { label: "Label", name: "label", widget: "string" }
-          - { label: "URL", name: "url", widget: "string" }
-      - label: "Conteúdo"
+          - label: "Texto do Botão"
+            name: "label"
+            widget: "string"
+            hint: "O que vai escrito no botão. Seja direto e use verbos de ação. Exemplo: Abrir conta grátis, Ver oferta, Baixar guia."
+          - label: "Link do Botão (URL)"
+            name: "url"
+            widget: "string"
+            hint: "Endereço completo (com https://) para onde o botão vai levar o leitor."
+
+      - label: "Conteúdo do Artigo"
         name: "body"
         widget: "markdown"
+        hint: >
+          Escreva aqui o conteúdo completo do artigo usando o editor de texto.
+          Use os botões acima para formatar títulos (H2, H3), negrito, itálico, listas e links.
+          Estruture o artigo com subtítulos claros a cada 300-400 palavras para facilitar a leitura.
 
   # =========================================================
-  # FINANCE — EN
+  # FINANÇAS — EN
   # =========================================================
   - name: "finance_en"
-    label: "Finance (EN)"
-    label_singular: "Finance Post (EN)"
+    label: "Finance — Articles in English"
+    label_singular: "Finance Article (EN)"
+    description: >
+      All Finance niche articles written in English.
+      Fill in all required fields before publishing.
+      SEO fields are essential for ranking well on Google.
     folder: "src/content/finance_en"
     create: true
     extension: "mdx"
@@ -106,12 +398,26 @@ collections:
     slug: "{{slug}}"
     preview_path: "en/finance/{{category}}/{{slug}}"
     fields:
-      - { label: "Language", name: "language", widget: "hidden", default: "en" }
+      - label: "Language"
+        name: "language"
+        widget: "hidden"
+        default: "en"
+
       - label: "Category"
         name: "category"
         widget: "select"
-        options: ["investing", "fixed-income", "stocks", "crypto", "financial-planning"]
-      - label: "Translation of (PT slug)"
+        hint: >
+          Choose the category that best describes this article's topic.
+          The category determines which section of the site the article is published in.
+          If the category you need is not in the list, register it first under 'Categories'.
+        options:
+          - { label: "Investing", value: "investing" }
+          - { label: "Fixed Income (Bonds, Treasury...)", value: "fixed-income" }
+          - { label: "Stocks & ETFs", value: "stocks" }
+          - { label: "Crypto", value: "crypto" }
+          - { label: "Financial Planning", value: "financial-planning" }
+
+      - label: "Translation of (Portuguese version)"
         name: "translation_of"
         widget: "relation"
         collection: "finance_pt"
@@ -119,54 +425,239 @@ collections:
         value_field: "slug"
         display_fields: ["title"]
         required: false
-      - { label: "Title", name: "title", widget: "string", pattern: ['.{10,70}', '10 to 70 chars'] }
-      - { label: "Excerpt", name: "excerpt", widget: "text", pattern: ['.{80,200}', '80 to 200 chars'] }
-      - { label: "Featured image", name: "featured_image", widget: "image" }
-      - { label: "Image ALT", name: "featured_image_alt", widget: "string" }
-      - { label: "SEO Title", name: "seo_title", widget: "string", pattern: ['.{10,60}', '10 to 60 chars'] }
-      - { label: "SEO Description", name: "seo_description", widget: "text", pattern: ['.{120,160}', '120 to 160 chars'] }
-      - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "draft" }
+        hint: >
+          If this article is the English version of an existing Portuguese article,
+          select the original article here. This helps Google understand they are the same content
+          in different languages and improves international ranking. Leave blank if this is a new article.
+
+      - label: "Article Title"
+        name: "title"
+        widget: "string"
+        hint: >
+          The main title of the article, shown at the top of the page and on social media.
+          Keep it between 10 and 70 characters. Be direct and include the main keyword.
+          Example: 'Best ETFs to Invest in 2026: Complete Guide'.
+        pattern: ['.{10,70}', 'Title must be between 10 and 70 characters']
+
+      - label: "Article Summary (Excerpt)"
+        name: "excerpt"
+        widget: "text"
+        hint: >
+          A short summary shown in listing cards and social media previews.
+          Explain in 1–2 sentences what the reader will learn. Keep it between 80 and 200 characters.
+          Include the main keyword. Example: 'Analysis of the most profitable ETFs in 2026, comparing fees, liquidity and historical performance.'
+        pattern: ['.{80,200}', 'Excerpt must be between 80 and 200 characters']
+
+      - label: "Cover Image"
+        name: "featured_image"
+        widget: "image"
+        hint: >
+          Main image displayed at the top of the post and in shared links.
+          Use JPG or PNG images, at least 1200×630 pixels for good appearance on social media.
+          Avoid images with too much text.
+
+      - label: "Image Description (ALT text)"
+        name: "featured_image_alt"
+        widget: "string"
+        hint: >
+          Alternative text that describes the image for visually impaired users and for Google.
+          Describe what is in the image objectively.
+          Example: 'Chart showing the evolution of the best ETFs in 2026'.
+          Required for SEO and accessibility.
+
+      - label: "SEO Title (shown on Google)"
+        name: "seo_title"
+        widget: "string"
+        hint: >
+          Title that appears in the browser tab and in Google search results — can differ from the article title.
+          Ideal: between 50 and 60 characters. Include the main keyword near the beginning.
+          Example: 'Best ETFs 2026: Complete Investment Guide'.
+        pattern: ['.{10,60}', 'SEO title must be between 10 and 60 characters']
+
+      - label: "SEO Description (Meta Description)"
+        name: "seo_description"
+        widget: "text"
+        hint: >
+          Text Google shows below the title in search results.
+          This is your chance to convince the reader to click. Keep it between 120 and 160 characters.
+          Include the keyword, explain the benefit and end with a call to action.
+          Example: 'Discover the best ETFs to invest in 2026. We compare fees, liquidity and returns to help you make the best decision.'
+        pattern: ['.{120,160}', 'SEO description must be between 120 and 160 characters']
+
+      - label: "Publication Status"
+        name: "status"
+        widget: "select"
+        hint: >
+          Draft: the article is being written and won't appear on the site.
+          Published: the article is visible to all visitors.
+          Always start as Draft and only switch to Published after review.
+        options:
+          - { label: "Draft (not published)", value: "draft" }
+          - { label: "Published (visible on site)", value: "published" }
+        default: "draft"
+
       - label: "Author"
         name: "author"
         widget: "object"
+        hint: "Information about who wrote the article. The author name appears at the bottom of the post and helps build credibility (Google E-E-A-T)."
         fields:
-          - { label: "Name", name: "name", widget: "string", default: "Editorial Team" }
-          - { label: "URL", name: "url", widget: "string", required: false }
-          - { label: "Avatar", name: "avatar", widget: "image", required: false }
-      - { label: "Publish date", name: "publish_date", widget: "datetime" }
-      - { label: "Updated date", name: "updated_date", widget: "datetime", required: false }
-      - { label: "Canonical URL", name: "canonical_url", widget: "string", required: false }
-      - { label: "No-index", name: "noindex", widget: "boolean", default: false }
-      - { label: "Silo pillar?", name: "pillar", widget: "boolean", default: false }
-      - { label: "Pillar of (slug)", name: "pillar_of", widget: "string", required: false }
-      - { label: "Related (slugs)", name: "related", widget: "list", required: false, default: [] }
-      - { label: "Tags", name: "tags", widget: "list", required: false, default: [] }
-      - { label: "Ads enabled", name: "ad_slots_enabled", widget: "boolean", default: true }
-      - { label: "Affiliate disclosure", name: "affiliate_disclosure", widget: "boolean", default: false }
-      - label: "FAQ (Schema.org Rich Snippet)"
+          - label: "Author Name"
+            name: "name"
+            widget: "string"
+            default: "Editorial Team"
+            hint: "Full name or editorial name. Appears on the article page."
+          - label: "Author Link (optional)"
+            name: "url"
+            widget: "string"
+            required: false
+            hint: "URL of the author's profile (LinkedIn, personal site, etc.). Leave blank if not available."
+          - label: "Author Photo (optional)"
+            name: "avatar"
+            widget: "image"
+            required: false
+            hint: "Author profile photo. Recommended: square image, at least 200×200 pixels."
+
+      - label: "Publication Date"
+        name: "publish_date"
+        widget: "datetime"
+        hint: "Date when the article was or will be published. Shown on the post and used by Google to order recent content."
+
+      - label: "Last Updated Date (optional)"
+        name: "updated_date"
+        widget: "datetime"
+        required: false
+        hint: "If the article was revised or updated, enter the date of the latest version here. Updated articles tend to rank better."
+
+      - label: "Canonical URL (optional — advanced)"
+        name: "canonical_url"
+        widget: "string"
+        required: false
+        hint: >
+          Leave blank in most cases — the site sets this automatically.
+          Only fill in if this article was originally published on another site
+          and you want to tell Google which is the 'official' address of the content.
+
+      - label: "Hide from Google (No-index)"
+        name: "noindex"
+        widget: "boolean"
+        default: false
+        hint: >
+          When enabled, tells Google NOT to index this article (it won't appear in search results).
+          Use only for drafts, internal pages or content that should not appear on Google.
+          In most cases, leave DISABLED.
+
+      - label: "Is this the pillar article of the category?"
+        name: "pillar"
+        widget: "boolean"
+        default: false
+        hint: >
+          Pillar articles are the most complete guides on a topic — the reference content for a category.
+          Each category should have only ONE pillar article.
+          Enable this for the main article and leave disabled for others.
+
+      - label: "Child of pillar (pillar article slug)"
+        name: "pillar_of"
+        widget: "string"
+        required: false
+        hint: >
+          If this article covers a subtopic of a pillar article, enter here the slug (URL identifier)
+          of the pillar article it belongs to. This creates automatic links between articles.
+          Example: if the pillar is 'complete-etf-guide', write exactly 'complete-etf-guide'.
+          Leave blank if this is an independent article.
+
+      - label: "Related Articles (slugs)"
+        name: "related"
+        widget: "list"
+        required: false
+        default: []
+        hint: >
+          List of slugs (URL identifiers) of other site articles related to this one.
+          These appear in the 'Read also' section at the end of the post.
+          Write only the slug, not the full URL.
+          Example: best-etfs-2026, how-to-invest-in-stocks.
+
+      - label: "Tags (keywords)"
+        name: "tags"
+        widget: "list"
+        required: false
+        default: []
+        hint: >
+          Words or phrases describing the article content, separated by commas.
+          Help organise content internally.
+          Examples: ETF, investment, stocks, 2026.
+
+      - label: "Show ads in this article?"
+        name: "ad_slots_enabled"
+        widget: "boolean"
+        default: true
+        hint: >
+          When enabled, Google AdSense may display ads throughout the article.
+          Disable only if the article is not suitable for ads or on special pages.
+
+      - label: "Show affiliate links disclosure?"
+        name: "affiliate_disclosure"
+        widget: "boolean"
+        default: false
+        hint: >
+          Enable if the article contains affiliate links (links that earn a commission when the reader buys something).
+          The disclosure is legally required in many countries and increases reader trust.
+          Leave disabled if the article has no affiliate links.
+
+      - label: "FAQ — Frequently Asked Questions (optional)"
         name: "faq"
         widget: "list"
         required: false
+        hint: >
+          Add questions and answers about the article's topic.
+          The FAQ appears at the end of the post AND may appear as a highlight on Google (Rich Snippet),
+          increasing visibility. Recommended: at least 3 question/answer pairs.
+          Questions should be real doubts readers might have about the topic.
         fields:
-          - { label: "Question", name: "question", widget: "string" }
-          - { label: "Answer", name: "answer", widget: "text" }
-      - label: "CTA"
+          - label: "Question"
+            name: "question"
+            widget: "string"
+            hint: "Write the question as the reader would ask it. Example: What is the best ETF for beginners?"
+          - label: "Answer"
+            name: "answer"
+            widget: "text"
+            hint: "Answer clearly and directly, in 2 to 5 sentences. Avoid overly technical terms."
+
+      - label: "Call to Action Button — CTA (optional)"
         name: "cta"
         widget: "object"
         required: false
+        hint: >
+          A highlighted button that appears in the article to direct readers to an action:
+          open an account, download a resource, see an offer, etc.
+          Leave blank if you don't want to show a button.
         fields:
-          - { label: "Label", name: "label", widget: "string" }
-          - { label: "URL", name: "url", widget: "string" }
-      - label: "Body"
+          - label: "Button Text"
+            name: "label"
+            widget: "string"
+            hint: "Text displayed on the button. Be direct and use action verbs. Example: Open free account, See offer, Download guide."
+          - label: "Button Link (URL)"
+            name: "url"
+            widget: "string"
+            hint: "Full address (with https://) where the button will take the reader."
+
+      - label: "Article Content"
         name: "body"
         widget: "markdown"
+        hint: >
+          Write the full article content here using the text editor.
+          Use the buttons above to format headings (H2, H3), bold, italic, lists and links.
+          Structure the article with clear subheadings every 300–400 words for easy reading.
 
   # =========================================================
   # FITNESS — PT
   # =========================================================
   - name: "fitness_pt"
-    label: "Fitness (PT)"
-    label_singular: "Post de Fitness (PT)"
+    label: "Fitness — Artigos em Português"
+    label_singular: "Artigo de Fitness (PT)"
+    description: >
+      Aqui ficam todos os artigos do nicho Fitness escritos em português.
+      Preencha todos os campos obrigatórios antes de publicar.
+      Os campos de SEO são fundamentais para o artigo aparecer bem no Google.
     folder: "src/content/fitness_pt"
     create: true
     extension: "mdx"
@@ -174,12 +665,26 @@ collections:
     slug: "{{slug}}"
     preview_path: "pt/fitness/{{category}}/{{slug}}"
     fields:
-      - { label: "Idioma", name: "language", widget: "hidden", default: "pt" }
+      - label: "Idioma"
+        name: "language"
+        widget: "hidden"
+        default: "pt"
+
       - label: "Categoria"
         name: "category"
         widget: "select"
-        options: ["treino", "nutricao", "hipertrofia", "emagrecimento", "suplementacao"]
-      - label: "Tradução de (slug EN)"
+        hint: >
+          Escolha a categoria que melhor descreve o assunto do artigo.
+          A categoria determina em qual seção do site o artigo será publicado e afeta o endereço (URL).
+          Se a categoria que precisa não está na lista, cadastre-a primeiro no menu 'Categorias'.
+        options:
+          - { label: "Treino", value: "treino" }
+          - { label: "Nutrição", value: "nutricao" }
+          - { label: "Hipertrofia (ganho de massa)", value: "hipertrofia" }
+          - { label: "Emagrecimento (perda de peso)", value: "emagrecimento" }
+          - { label: "Suplementação", value: "suplementacao" }
+
+      - label: "Artigo traduzido de (versão em inglês)"
         name: "translation_of"
         widget: "relation"
         collection: "fitness_en"
@@ -187,54 +692,239 @@ collections:
         value_field: "slug"
         display_fields: ["title"]
         required: false
-      - { label: "Título", name: "title", widget: "string", pattern: ['.{10,70}', '10 a 70 caracteres'] }
-      - { label: "Resumo (excerpt)", name: "excerpt", widget: "text", pattern: ['.{80,200}', '80 a 200 caracteres'] }
-      - { label: "Imagem destacada", name: "featured_image", widget: "image" }
-      - { label: "ALT da imagem", name: "featured_image_alt", widget: "string" }
-      - { label: "SEO Title", name: "seo_title", widget: "string", pattern: ['.{10,60}', '10 a 60 caracteres'] }
-      - { label: "SEO Description", name: "seo_description", widget: "text", pattern: ['.{120,160}', '120 a 160 caracteres'] }
-      - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "draft" }
+        hint: >
+          Se este artigo é a versão em português de um artigo já existente em inglês,
+          selecione aqui o artigo original. Isso ajuda o Google a entender que são o mesmo conteúdo
+          em idiomas diferentes e melhora o posicionamento internacional. Deixe em branco se for um artigo novo.
+
+      - label: "Título do Artigo"
+        name: "title"
+        widget: "string"
+        hint: >
+          O título principal do artigo, que aparece no topo da página e nas redes sociais.
+          Use entre 10 e 70 caracteres. Seja direto e inclua a palavra-chave principal.
+          Exemplo: 'Guia Completo de Hipertrofia: Ciência e Prática'.
+        pattern: ['.{10,70}', 'O título deve ter entre 10 e 70 caracteres']
+
+      - label: "Resumo do Artigo (Excerpt)"
+        name: "excerpt"
+        widget: "text"
+        hint: >
+          Um resumo curto que aparece nos cards de listagem e pode ser usado em redes sociais.
+          Deve explicar em 1 ou 2 frases o que o leitor vai aprender. Use entre 80 e 200 caracteres.
+          Inclua a palavra-chave principal. Exemplo: 'Princípios científicos de hipertrofia muscular: sobrecarga progressiva, volume, intensidade e recuperação.'
+        pattern: ['.{80,200}', 'O resumo deve ter entre 80 e 200 caracteres']
+
+      - label: "Imagem de Capa"
+        name: "featured_image"
+        widget: "image"
+        hint: >
+          Imagem principal do artigo, exibida no topo do post e nos links compartilhados.
+          Use imagens em formato JPG ou PNG, com pelo menos 1200×630 pixels para boa aparência nas redes sociais.
+          Evite imagens com muito texto.
+
+      - label: "Descrição da Imagem (ALT)"
+        name: "featured_image_alt"
+        widget: "string"
+        hint: >
+          Texto alternativo que descreve a imagem para pessoas com deficiência visual e para o Google.
+          Descreva o que está na imagem de forma objetiva.
+          Exemplo: 'Atleta realizando exercício de hipertrofia na academia'.
+          Obrigatório para SEO e acessibilidade.
+
+      - label: "Título SEO (para o Google)"
+        name: "seo_title"
+        widget: "string"
+        hint: >
+          Título que aparece na aba do navegador e nos resultados do Google — pode ser diferente do título do artigo.
+          Ideal: entre 50 e 60 caracteres. Inclua a palavra-chave principal no início.
+          Exemplo: 'Hipertrofia: Guia Completo com Ciência e Prática'.
+        pattern: ['.{10,60}', 'O título SEO deve ter entre 10 e 60 caracteres']
+
+      - label: "Descrição SEO (Meta Description)"
+        name: "seo_description"
+        widget: "text"
+        hint: >
+          Texto que o Google exibe por baixo do título nos resultados de busca.
+          É sua chance de convencer o leitor a clicar. Use entre 120 e 160 caracteres.
+          Inclua a palavra-chave, explique o benefício e finalize com um convite à ação.
+          Exemplo: 'Aprenda os princípios científicos da hipertrofia muscular: sobrecarga progressiva, volume ideal, frequência e recuperação, com protocolos práticos para cada nível.'
+        pattern: ['.{120,160}', 'A descrição SEO deve ter entre 120 e 160 caracteres']
+
+      - label: "Status de Publicação"
+        name: "status"
+        widget: "select"
+        hint: >
+          Rascunho: o artigo está sendo escrito e não aparece no site.
+          Publicado: o artigo está visível para todos os visitantes.
+          Comece sempre como Rascunho e mude para Publicado apenas quando estiver revisado.
+        options:
+          - { label: "Rascunho (não publicado)", value: "draft" }
+          - { label: "Publicado (visível no site)", value: "published" }
+        default: "draft"
+
       - label: "Autor"
         name: "author"
         widget: "object"
+        hint: "Informações de quem escreveu o artigo. O nome do autor aparece no rodapé do post e ajuda na credibilidade (E-E-A-T do Google)."
         fields:
-          - { label: "Nome", name: "name", widget: "string", default: "Equipe Editorial" }
-          - { label: "URL", name: "url", widget: "string", required: false }
-          - { label: "Avatar", name: "avatar", widget: "image", required: false }
-      - { label: "Data de publicação", name: "publish_date", widget: "datetime" }
-      - { label: "Data de atualização", name: "updated_date", widget: "datetime", required: false }
-      - { label: "Canonical URL", name: "canonical_url", widget: "string", required: false }
-      - { label: "No-index", name: "noindex", widget: "boolean", default: false }
-      - { label: "É pilar do silo?", name: "pillar", widget: "boolean", default: false }
-      - { label: "Pilar de (slug do pilar)", name: "pillar_of", widget: "string", required: false }
-      - { label: "Relacionados (slugs)", name: "related", widget: "list", required: false, default: [] }
-      - { label: "Tags", name: "tags", widget: "list", required: false, default: [] }
-      - { label: "Ads habilitados", name: "ad_slots_enabled", widget: "boolean", default: true }
-      - { label: "Disclosure de afiliados", name: "affiliate_disclosure", widget: "boolean", default: false }
-      - label: "FAQ (Rich Snippet Schema.org)"
+          - label: "Nome do Autor"
+            name: "name"
+            widget: "string"
+            default: "Equipe Editorial"
+            hint: "Nome completo ou nome editorial. Aparece na página do artigo."
+          - label: "Link do Autor (opcional)"
+            name: "url"
+            widget: "string"
+            required: false
+            hint: "Endereço do perfil do autor (LinkedIn, site pessoal, etc.). Deixe em branco se não tiver."
+          - label: "Foto do Autor (opcional)"
+            name: "avatar"
+            widget: "image"
+            required: false
+            hint: "Foto de perfil do autor. Recomendado: imagem quadrada de pelo menos 200×200 pixels."
+
+      - label: "Data de Publicação"
+        name: "publish_date"
+        widget: "datetime"
+        hint: "Data em que o artigo foi ou será publicado. Aparece no post e é usada pelo Google para ordenar conteúdo recente."
+
+      - label: "Data da Última Atualização (opcional)"
+        name: "updated_date"
+        widget: "datetime"
+        required: false
+        hint: "Se o artigo foi revisado ou atualizado, coloque aqui a data da última versão. Artigos atualizados tendem a rankear melhor."
+
+      - label: "URL Canônica (opcional — avançado)"
+        name: "canonical_url"
+        widget: "string"
+        required: false
+        hint: >
+          Deixe em branco na maioria dos casos — o site define automaticamente.
+          Preencha apenas se este artigo foi publicado originalmente em outro site
+          e você quer indicar ao Google qual é o endereço 'oficial' do conteúdo.
+
+      - label: "Ocultar do Google (No-index)"
+        name: "noindex"
+        widget: "boolean"
+        default: false
+        hint: >
+          Quando ativado, pede ao Google para NÃO indexar este artigo (ele não aparecerá nas buscas).
+          Use apenas para rascunhos, páginas internas ou conteúdo que não deve aparecer no Google.
+          Na maioria dos casos, deixe DESATIVADO.
+
+      - label: "É o artigo pilar da categoria?"
+        name: "pillar"
+        widget: "boolean"
+        default: false
+        hint: >
+          Artigos pilar são os guias mais completos de um tema — o conteúdo de referência da categoria.
+          Cada categoria deve ter apenas UM artigo pilar.
+          Ative esta opção para o artigo principal e deixe desativado nos demais.
+
+      - label: "É filho do pilar (slug do artigo pilar)"
+        name: "pillar_of"
+        widget: "string"
+        required: false
+        hint: >
+          Se este artigo aprofunda um subtópico de um artigo pilar, coloque aqui o slug (endereço)
+          do artigo pilar ao qual ele pertence. Isso cria links automáticos entre os artigos.
+          Exemplo: se o pilar é 'guia-completo-hipertrofia', escreva exatamente 'guia-completo-hipertrofia'.
+          Deixe em branco se o artigo for independente.
+
+      - label: "Artigos Relacionados (slugs)"
+        name: "related"
+        widget: "list"
+        required: false
+        default: []
+        hint: >
+          Lista de slugs (endereços) de outros artigos do site que têm relação com este.
+          Estes artigos aparecem na seção 'Leia também' no final do post.
+          Escreva apenas o slug, sem o endereço completo.
+          Exemplo: guia-completo-hipertrofia, melhores-suplementos-2026.
+
+      - label: "Tags (palavras-chave)"
+        name: "tags"
+        widget: "list"
+        required: false
+        default: []
+        hint: >
+          Palavras ou frases que descrevem o conteúdo do artigo, separadas por vírgula.
+          Ajudam a organizar o conteúdo internamente.
+          Exemplos: hipertrofia, treino, musculação, nutrição.
+
+      - label: "Exibir anúncios neste artigo?"
+        name: "ad_slots_enabled"
+        widget: "boolean"
+        default: true
+        hint: >
+          Quando ativado, o Google AdSense pode exibir anúncios ao longo do artigo.
+          Desative apenas se o artigo não for adequado para anúncios ou em páginas especiais.
+
+      - label: "Exibir aviso de links de afiliados?"
+        name: "affiliate_disclosure"
+        widget: "boolean"
+        default: false
+        hint: >
+          Ative se o artigo contém links de afiliados (links que geram comissão quando o leitor compra algo).
+          O aviso é obrigatório por lei em muitos países e aumenta a confiança do leitor.
+          Deixe desativado se o artigo não tiver links de afiliados.
+
+      - label: "Perguntas Frequentes — FAQ (opcional)"
         name: "faq"
         widget: "list"
         required: false
+        hint: >
+          Adicione perguntas e respostas sobre o tema do artigo.
+          O FAQ aparece no final do post E pode aparecer em destaque no Google (Rich Snippet),
+          aumentando a visibilidade. Recomendado: mínimo de 3 pares de pergunta/resposta.
+          As perguntas devem ser dúvidas reais que o leitor teria sobre o tema.
         fields:
-          - { label: "Pergunta", name: "question", widget: "string" }
-          - { label: "Resposta", name: "answer", widget: "text" }
-      - label: "CTA"
+          - label: "Pergunta"
+            name: "question"
+            widget: "string"
+            hint: "Escreva a pergunta como o leitor faria. Exemplo: Quantas vezes por semana devo treinar para ganhar massa?"
+          - label: "Resposta"
+            name: "answer"
+            widget: "text"
+            hint: "Responda de forma clara e direta, em 2 a 5 frases. Evite termos muito técnicos."
+
+      - label: "Botão de Chamada para Ação — CTA (opcional)"
         name: "cta"
         widget: "object"
         required: false
+        hint: >
+          Um botão de destaque que aparece no artigo para direcionar o leitor a uma ação:
+          comprar um produto, baixar um treino, ver uma oferta, etc.
+          Deixe em branco se não quiser exibir um botão.
         fields:
-          - { label: "Label", name: "label", widget: "string" }
-          - { label: "URL", name: "url", widget: "string" }
-      - label: "Conteúdo"
+          - label: "Texto do Botão"
+            name: "label"
+            widget: "string"
+            hint: "O que vai escrito no botão. Seja direto e use verbos de ação. Exemplo: Ver plano de treino, Comprar suplemento, Baixar planilha."
+          - label: "Link do Botão (URL)"
+            name: "url"
+            widget: "string"
+            hint: "Endereço completo (com https://) para onde o botão vai levar o leitor."
+
+      - label: "Conteúdo do Artigo"
         name: "body"
         widget: "markdown"
+        hint: >
+          Escreva aqui o conteúdo completo do artigo usando o editor de texto.
+          Use os botões acima para formatar títulos (H2, H3), negrito, itálico, listas e links.
+          Estruture o artigo com subtítulos claros a cada 300-400 palavras para facilitar a leitura.
 
   # =========================================================
   # FITNESS — EN
   # =========================================================
   - name: "fitness_en"
-    label: "Fitness (EN)"
-    label_singular: "Fitness Post (EN)"
+    label: "Fitness — Articles in English"
+    label_singular: "Fitness Article (EN)"
+    description: >
+      All Fitness niche articles written in English.
+      Fill in all required fields before publishing.
+      SEO fields are essential for ranking well on Google.
     folder: "src/content/fitness_en"
     create: true
     extension: "mdx"
@@ -242,12 +932,26 @@ collections:
     slug: "{{slug}}"
     preview_path: "en/fitness/{{category}}/{{slug}}"
     fields:
-      - { label: "Language", name: "language", widget: "hidden", default: "en" }
+      - label: "Language"
+        name: "language"
+        widget: "hidden"
+        default: "en"
+
       - label: "Category"
         name: "category"
         widget: "select"
-        options: ["training", "nutrition", "hypertrophy", "weight-loss", "supplements"]
-      - label: "Translation of (PT slug)"
+        hint: >
+          Choose the category that best describes this article's topic.
+          The category determines which section of the site the article is published in.
+          If the category you need is not in the list, register it first under 'Categories'.
+        options:
+          - { label: "Training", value: "training" }
+          - { label: "Nutrition", value: "nutrition" }
+          - { label: "Hypertrophy (muscle gain)", value: "hypertrophy" }
+          - { label: "Weight Loss", value: "weight-loss" }
+          - { label: "Supplements", value: "supplements" }
+
+      - label: "Translation of (Portuguese version)"
         name: "translation_of"
         widget: "relation"
         collection: "fitness_pt"
@@ -255,44 +959,225 @@ collections:
         value_field: "slug"
         display_fields: ["title"]
         required: false
-      - { label: "Title", name: "title", widget: "string", pattern: ['.{10,70}', '10 to 70 chars'] }
-      - { label: "Excerpt", name: "excerpt", widget: "text", pattern: ['.{80,200}', '80 to 200 chars'] }
-      - { label: "Featured image", name: "featured_image", widget: "image" }
-      - { label: "Image ALT", name: "featured_image_alt", widget: "string" }
-      - { label: "SEO Title", name: "seo_title", widget: "string", pattern: ['.{10,60}', '10 to 60 chars'] }
-      - { label: "SEO Description", name: "seo_description", widget: "text", pattern: ['.{120,160}', '120 to 160 chars'] }
-      - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "draft" }
+        hint: >
+          If this article is the English version of an existing Portuguese article,
+          select the original article here. This helps Google understand they are the same content
+          in different languages and improves international ranking. Leave blank if this is a new article.
+
+      - label: "Article Title"
+        name: "title"
+        widget: "string"
+        hint: >
+          The main title of the article, shown at the top of the page and on social media.
+          Keep it between 10 and 70 characters. Be direct and include the main keyword.
+          Example: 'Complete Hypertrophy Guide: Science and Practice'.
+        pattern: ['.{10,70}', 'Title must be between 10 and 70 characters']
+
+      - label: "Article Summary (Excerpt)"
+        name: "excerpt"
+        widget: "text"
+        hint: >
+          A short summary shown in listing cards and social media previews.
+          Explain in 1–2 sentences what the reader will learn. Keep it between 80 and 200 characters.
+          Include the main keyword. Example: 'Scientific principles of muscle hypertrophy: progressive overload, volume, intensity, frequency and recovery with practical protocols.'
+        pattern: ['.{80,200}', 'Excerpt must be between 80 and 200 characters']
+
+      - label: "Cover Image"
+        name: "featured_image"
+        widget: "image"
+        hint: >
+          Main image displayed at the top of the post and in shared links.
+          Use JPG or PNG images, at least 1200×630 pixels for good appearance on social media.
+          Avoid images with too much text.
+
+      - label: "Image Description (ALT text)"
+        name: "featured_image_alt"
+        widget: "string"
+        hint: >
+          Alternative text that describes the image for visually impaired users and for Google.
+          Describe what is in the image objectively.
+          Example: 'Athlete performing hypertrophy exercise at the gym'.
+          Required for SEO and accessibility.
+
+      - label: "SEO Title (shown on Google)"
+        name: "seo_title"
+        widget: "string"
+        hint: >
+          Title that appears in the browser tab and in Google search results — can differ from the article title.
+          Ideal: between 50 and 60 characters. Include the main keyword near the beginning.
+          Example: 'Hypertrophy Guide: Science-Backed Muscle Building'.
+        pattern: ['.{10,60}', 'SEO title must be between 10 and 60 characters']
+
+      - label: "SEO Description (Meta Description)"
+        name: "seo_description"
+        widget: "text"
+        hint: >
+          Text Google shows below the title in search results.
+          This is your chance to convince the reader to click. Keep it between 120 and 160 characters.
+          Include the keyword, explain the benefit and end with a call to action.
+          Example: 'Learn the scientific principles of muscle hypertrophy: progressive overload, ideal volume, frequency and recovery, with practical protocols for every level.'
+        pattern: ['.{120,160}', 'SEO description must be between 120 and 160 characters']
+
+      - label: "Publication Status"
+        name: "status"
+        widget: "select"
+        hint: >
+          Draft: the article is being written and won't appear on the site.
+          Published: the article is visible to all visitors.
+          Always start as Draft and only switch to Published after review.
+        options:
+          - { label: "Draft (not published)", value: "draft" }
+          - { label: "Published (visible on site)", value: "published" }
+        default: "draft"
+
       - label: "Author"
         name: "author"
         widget: "object"
+        hint: "Information about who wrote the article. The author name appears at the bottom of the post and helps build credibility (Google E-E-A-T)."
         fields:
-          - { label: "Name", name: "name", widget: "string", default: "Editorial Team" }
-          - { label: "URL", name: "url", widget: "string", required: false }
-          - { label: "Avatar", name: "avatar", widget: "image", required: false }
-      - { label: "Publish date", name: "publish_date", widget: "datetime" }
-      - { label: "Updated date", name: "updated_date", widget: "datetime", required: false }
-      - { label: "Canonical URL", name: "canonical_url", widget: "string", required: false }
-      - { label: "No-index", name: "noindex", widget: "boolean", default: false }
-      - { label: "Silo pillar?", name: "pillar", widget: "boolean", default: false }
-      - { label: "Pillar of (slug)", name: "pillar_of", widget: "string", required: false }
-      - { label: "Related (slugs)", name: "related", widget: "list", required: false, default: [] }
-      - { label: "Tags", name: "tags", widget: "list", required: false, default: [] }
-      - { label: "Ads enabled", name: "ad_slots_enabled", widget: "boolean", default: true }
-      - { label: "Affiliate disclosure", name: "affiliate_disclosure", widget: "boolean", default: false }
-      - label: "FAQ (Schema.org Rich Snippet)"
+          - label: "Author Name"
+            name: "name"
+            widget: "string"
+            default: "Editorial Team"
+            hint: "Full name or editorial name. Appears on the article page."
+          - label: "Author Link (optional)"
+            name: "url"
+            widget: "string"
+            required: false
+            hint: "URL of the author's profile (LinkedIn, personal site, etc.). Leave blank if not available."
+          - label: "Author Photo (optional)"
+            name: "avatar"
+            widget: "image"
+            required: false
+            hint: "Author profile photo. Recommended: square image, at least 200×200 pixels."
+
+      - label: "Publication Date"
+        name: "publish_date"
+        widget: "datetime"
+        hint: "Date when the article was or will be published. Shown on the post and used by Google to order recent content."
+
+      - label: "Last Updated Date (optional)"
+        name: "updated_date"
+        widget: "datetime"
+        required: false
+        hint: "If the article was revised or updated, enter the date of the latest version here. Updated articles tend to rank better."
+
+      - label: "Canonical URL (optional — advanced)"
+        name: "canonical_url"
+        widget: "string"
+        required: false
+        hint: >
+          Leave blank in most cases — the site sets this automatically.
+          Only fill in if this article was originally published on another site
+          and you want to tell Google which is the 'official' address of the content.
+
+      - label: "Hide from Google (No-index)"
+        name: "noindex"
+        widget: "boolean"
+        default: false
+        hint: >
+          When enabled, tells Google NOT to index this article (it won't appear in search results).
+          Use only for drafts, internal pages or content that should not appear on Google.
+          In most cases, leave DISABLED.
+
+      - label: "Is this the pillar article of the category?"
+        name: "pillar"
+        widget: "boolean"
+        default: false
+        hint: >
+          Pillar articles are the most complete guides on a topic — the reference content for a category.
+          Each category should have only ONE pillar article.
+          Enable this for the main article and leave disabled for others.
+
+      - label: "Child of pillar (pillar article slug)"
+        name: "pillar_of"
+        widget: "string"
+        required: false
+        hint: >
+          If this article covers a subtopic of a pillar article, enter here the slug (URL identifier)
+          of the pillar article it belongs to. This creates automatic links between articles.
+          Example: if the pillar is 'complete-hypertrophy-guide', write exactly 'complete-hypertrophy-guide'.
+          Leave blank if this is an independent article.
+
+      - label: "Related Articles (slugs)"
+        name: "related"
+        widget: "list"
+        required: false
+        default: []
+        hint: >
+          List of slugs (URL identifiers) of other site articles related to this one.
+          These appear in the 'Read also' section at the end of the post.
+          Write only the slug, not the full URL.
+          Example: complete-hypertrophy-guide, best-supplements-2026.
+
+      - label: "Tags (keywords)"
+        name: "tags"
+        widget: "list"
+        required: false
+        default: []
+        hint: >
+          Words or phrases describing the article content, separated by commas.
+          Help organise content internally.
+          Examples: hypertrophy, training, muscle, nutrition.
+
+      - label: "Show ads in this article?"
+        name: "ad_slots_enabled"
+        widget: "boolean"
+        default: true
+        hint: >
+          When enabled, Google AdSense may display ads throughout the article.
+          Disable only if the article is not suitable for ads or on special pages.
+
+      - label: "Show affiliate links disclosure?"
+        name: "affiliate_disclosure"
+        widget: "boolean"
+        default: false
+        hint: >
+          Enable if the article contains affiliate links (links that earn a commission when the reader buys something).
+          The disclosure is legally required in many countries and increases reader trust.
+          Leave disabled if the article has no affiliate links.
+
+      - label: "FAQ — Frequently Asked Questions (optional)"
         name: "faq"
         widget: "list"
         required: false
+        hint: >
+          Add questions and answers about the article's topic.
+          The FAQ appears at the end of the post AND may appear as a highlight on Google (Rich Snippet),
+          increasing visibility. Recommended: at least 3 question/answer pairs.
+          Questions should be real doubts readers might have about the topic.
         fields:
-          - { label: "Question", name: "question", widget: "string" }
-          - { label: "Answer", name: "answer", widget: "text" }
-      - label: "CTA"
+          - label: "Question"
+            name: "question"
+            widget: "string"
+            hint: "Write the question as the reader would ask it. Example: How many times a week should I train to build muscle?"
+          - label: "Answer"
+            name: "answer"
+            widget: "text"
+            hint: "Answer clearly and directly, in 2 to 5 sentences. Avoid overly technical terms."
+
+      - label: "Call to Action Button — CTA (optional)"
         name: "cta"
         widget: "object"
         required: false
+        hint: >
+          A highlighted button that appears in the article to direct readers to an action:
+          buy a product, download a workout plan, see an offer, etc.
+          Leave blank if you don't want to show a button.
         fields:
-          - { label: "Label", name: "label", widget: "string" }
-          - { label: "URL", name: "url", widget: "string" }
-      - label: "Body"
+          - label: "Button Text"
+            name: "label"
+            widget: "string"
+            hint: "Text displayed on the button. Be direct and use action verbs. Example: See workout plan, Buy supplement, Download spreadsheet."
+          - label: "Button Link (URL)"
+            name: "url"
+            widget: "string"
+            hint: "Full address (with https://) where the button will take the reader."
+
+      - label: "Article Content"
         name: "body"
         widget: "markdown"
+        hint: >
+          Write the full article content here using the text editor.
+          Use the buttons above to format headings (H2, H3), bold, italic, lists and links.
+          Structure the article with clear subheadings every 300–400 words for easy reading.
