@@ -4,7 +4,7 @@ compatibility_date = "2025-09-01"
 workers_dev = true
 
 [vars]
-ALLOWED_ORIGIN = "https://blogs-seo.pages.dev"
+ALLOWED_ORIGIN = "https://blogs-seo.paulojrzti.workers.dev"
 
 # Secrets (NUNCA commitar):
 # npx wrangler secret put GITHUB_CLIENT_ID

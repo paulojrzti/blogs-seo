@@ -2,7 +2,7 @@ backend:
   name: github
   repo: paulojrzti/blogs-seo
   branch: main
-  base_url: https://decap-oauth.CHANGE-ME.workers.dev
+  base_url: https://decap-oauth.paulojrzti.workers.dev
   auth_endpoint: /auth
   commit_messages:
     create: 'content(cms): create "{{slug}}"'
@@ -14,9 +14,9 @@ backend:
 publish_mode: editorial_workflow
 media_folder: "src/assets/images"
 public_folder: "/src/assets/images"
-site_url: https://blogs-seo.pages.dev
-display_url: https://blogs-seo.pages.dev
-logo_url: https://blogs-seo.pages.dev/favicon.svg
+site_url: https://blogs-seo.paulojrzti.workers.dev
+display_url: https://blogs-seo.paulojrzti.workers.dev
+logo_url: https://blogs-seo.paulojrzti.workers.dev/favicon.svg
 locale: pt
 
 slug:

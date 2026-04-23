@@ -59,7 +59,7 @@ Para editar localmente sem OAuth do GitHub, rode `npx decap-server` em outro ter
    - Node version: `20`
 
 2. **GitHub OAuth App** (Settings → Developer settings → OAuth Apps → New)
-   - Homepage URL: `https://blogs-seo.pages.dev`
+   - Homepage URL: `https://blogs-seo.paulojrzti.workers.dev` (ou o teu custom domain após o passo 6)
    - Authorization callback URL: `https://decap-oauth.<seu-subdominio>.workers.dev/callback`
 
 3. **Deploy do Worker OAuth**

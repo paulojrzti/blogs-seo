@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://blogs-seo.pages.dev';
+export const SITE_URL = 'https://blogs-seo.paulojrzti.workers.dev';
 export const SITE_NAME = 'YourBrand';
 export const GITHUB_REPO = 'paulojrzti/blogs-seo';
 

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /pagefind/
 
-Sitemap: https://blogs-seo.pages.dev/sitemap-index.xml
+Sitemap: https://blogs-seo.paulojrzti.workers.dev/sitemap-index.xml
