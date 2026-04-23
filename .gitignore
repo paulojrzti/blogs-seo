@@ -10,3 +10,6 @@ dist/
 *.log
 .cache/
 pnpm-debug.log*
+
+.dev.vars*
+!.dev.vars.example
