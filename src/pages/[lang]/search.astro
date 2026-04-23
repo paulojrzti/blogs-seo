@@ -1,0 +1,81 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import {
+  LOCALES,
+  SITE_URL,
+  otherLocale,
+  localeTag,
+  type Locale,
+} from '../../consts';
+import { t } from '../../i18n/ui';
+
+export const getStaticPaths: GetStaticPaths = () =>
+  LOCALES.map((lang) => ({ params: { lang } }));
+
+const lang = Astro.params.lang as Locale;
+const canonical = `${SITE_URL}/${lang}/search`;
+const other = otherLocale(lang);
+---
+
+<BaseLayout
+  title={t(lang, 'meta.search.title')}
+  description={t(lang, 'meta.search.desc')}
+  canonical={canonical}
+  lang={lang}
+  noindex
+  translationUrl={`/${other}/search`}
+  hreflang={[
+    { lang: 'pt-BR', url: `${SITE_URL}/pt/search` },
+    { lang: 'en-US', url: `${SITE_URL}/en/search` },
+    { lang: 'x-default', url: `${SITE_URL}/pt/search` },
+  ]}
+>
+  <Fragment slot="head">
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  </Fragment>
+
+  <Breadcrumb
+    items={[
+      { name: t(lang, 'breadcrumb.home'), url: `${SITE_URL}/${lang}` },
+      { name: t(lang, 'nav.search'), url: canonical },
+    ]}
+  />
+
+  <section class="py-8">
+    <h1 class="text-3xl font-bold">{t(lang, 'search.title')}</h1>
+    <p class="mt-2 text-slate-600">{t(lang, 'meta.search.desc')}</p>
+
+    <div id="search" class="mt-6" data-pagefind-ignore></div>
+  </section>
+
+  <script is:inline src="/pagefind/pagefind-ui.js" type="text/javascript"></script>
+  <script
+    is:inline
+    define:vars={{
+      lang: localeTag(lang),
+      placeholder: t(lang, 'search.placeholder'),
+      empty: t(lang, 'search.empty'),
+      loading: t(lang, 'search.loading'),
+    }}
+  >
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.PagefindUI) return;
+      new window.PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        resetStyles: false,
+        autofocus: true,
+        showImages: false,
+        translations: {
+          placeholder,
+          zero_results: empty,
+          load_more: '+',
+          searching: loading,
+          clear_search: '×',
+        },
+      });
+    });
+  </script>
+</BaseLayout>

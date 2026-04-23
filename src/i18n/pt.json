@@ -1,0 +1,44 @@
+{
+  "nav": { "home": "Início", "about": "Sobre", "search": "Buscar" },
+  "cta": {
+    "readMore": "Ler mais",
+    "seeAll": "Ver tudo",
+    "offer": "Ver oferta",
+    "search": "Buscar no blog"
+  },
+  "post": {
+    "updatedAt": "Atualizado em",
+    "related": "Posts relacionados",
+    "pillarBadge": "Guia Pilar",
+    "toc": "Neste artigo"
+  },
+  "breadcrumb": { "home": "Início" },
+  "affiliate": {
+    "disclosure": "Alguns links deste artigo são de afiliados. Podemos receber comissão sem custo extra para você."
+  },
+  "search": {
+    "title": "Buscar",
+    "placeholder": "O que você procura?",
+    "results": "Resultados",
+    "empty": "Nenhum resultado encontrado.",
+    "loading": "Carregando..."
+  },
+  "faq": { "title": "Perguntas frequentes" },
+  "meta": {
+    "home": {
+      "title": "Conteúdo baseado em dados sobre finanças e fitness",
+      "desc": "Guias, análises e estratégias auditáveis sobre finanças e fitness."
+    },
+    "search": {
+      "title": "Buscar no blog",
+      "desc": "Encontre guias, análises e tutoriais em todo o blog."
+    }
+  },
+  "footer": {
+    "sections": "Seções",
+    "legal": "Legal",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "rights": "Todos os direitos reservados."
+  }
+}

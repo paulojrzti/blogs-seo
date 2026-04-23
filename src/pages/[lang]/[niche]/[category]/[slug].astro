@@ -1,0 +1,66 @@
+---
+import type { GetStaticPaths } from 'astro';
+import PostLayout from '../../../../components/layout/PostLayout.astro';
+import {
+  LOCALES,
+  NICHES,
+  otherLocale,
+  type Locale,
+  type Niche,
+} from '../../../../consts';
+import { getAllPosts, getTranslation, type Post } from '../../../../lib/posts';
+import { pickRelated } from '../../../../lib/interlinking';
+import { buildPostHreflang } from '../../../../lib/seo';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const out: Array<{
+    params: { lang: Locale; niche: Niche; category: string; slug: string };
+    props: { post: Post; niche: Niche; lang: Locale };
+  }> = [];
+
+  for (const lang of LOCALES) {
+    for (const niche of NICHES) {
+      const posts = await getAllPosts(niche as Niche, lang);
+      for (const post of posts) {
+        out.push({
+          params: {
+            lang,
+            niche,
+            category: post.data.category,
+            slug: post.slug,
+          },
+          props: { post, niche, lang },
+        });
+      }
+    }
+  }
+  return out;
+};
+
+interface Props {
+  post: Post;
+  niche: Niche;
+  lang: Locale;
+}
+const { post, niche, lang } = Astro.props as Props;
+const { Content } = await post.render();
+
+const pool = await getAllPosts(niche, lang);
+const related = pickRelated(post, pool, 4);
+const translation = await getTranslation(post, otherLocale(lang));
+const hreflang = buildPostHreflang(post, translation, niche);
+const translationUrl = translation
+  ? `/${otherLocale(lang)}/${niche}/${translation.data.category}/${translation.slug}`
+  : undefined;
+---
+
+<PostLayout
+  post={post}
+  niche={niche}
+  lang={lang}
+  related={related}
+  translationUrl={translationUrl}
+  hreflang={hreflang}
+>
+  <Content />
+</PostLayout>

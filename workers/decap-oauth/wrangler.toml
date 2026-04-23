@@ -1,0 +1,11 @@
+name = "decap-oauth"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGIN = "https://blogs-seo.pages.dev"
+
+# Secrets (NUNCA commitar):
+# npx wrangler secret put GITHUB_CLIENT_ID
+# npx wrangler secret put GITHUB_CLIENT_SECRET

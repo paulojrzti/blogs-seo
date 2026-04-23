@@ -1,0 +1,298 @@
+backend:
+  name: github
+  repo: paulojrzti/blogs-seo
+  branch: main
+  base_url: https://decap-oauth.CHANGE-ME.workers.dev
+  auth_endpoint: /auth
+  commit_messages:
+    create: 'content(cms): create "{{slug}}"'
+    update: 'content(cms): update "{{slug}}"'
+    delete: 'content(cms): delete "{{slug}}"'
+    uploadMedia: 'content(cms): upload "{{path}}"'
+    deleteMedia: 'content(cms): delete media "{{path}}"'
+
+publish_mode: editorial_workflow
+media_folder: "src/assets/images"
+public_folder: "/src/assets/images"
+site_url: https://blogs-seo.pages.dev
+display_url: https://blogs-seo.pages.dev
+logo_url: https://blogs-seo.pages.dev/favicon.svg
+locale: pt
+
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
+
+collections:
+  # =========================================================
+  # FINANCE — PT
+  # =========================================================
+  - name: "finance_pt"
+    label: "Finanças (PT)"
+    label_singular: "Post de Finanças (PT)"
+    folder: "src/content/finance_pt"
+    create: true
+    extension: "mdx"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    preview_path: "pt/finance/{{category}}/{{slug}}"
+    fields:
+      - { label: "Idioma", name: "language", widget: "hidden", default: "pt" }
+      - label: "Categoria"
+        name: "category"
+        widget: "select"
+        options: ["investimentos", "renda-fixa", "renda-variavel", "cripto", "planejamento-financeiro"]
+      - label: "Tradução de (slug EN)"
+        name: "translation_of"
+        widget: "relation"
+        collection: "finance_en"
+        search_fields: ["title", "slug"]
+        value_field: "slug"
+        display_fields: ["title"]
+        required: false
+      - { label: "Título", name: "title", widget: "string", pattern: ['.{10,70}', '10 a 70 caracteres'] }
+      - { label: "Resumo (excerpt)", name: "excerpt", widget: "text", pattern: ['.{80,200}', '80 a 200 caracteres'] }
+      - { label: "Imagem destacada", name: "featured_image", widget: "image" }
+      - { label: "ALT da imagem", name: "featured_image_alt", widget: "string" }
+      - { label: "SEO Title", name: "seo_title", widget: "string", pattern: ['.{10,60}', '10 a 60 caracteres'] }
+      - { label: "SEO Description", name: "seo_description", widget: "text", pattern: ['.{120,160}', '120 a 160 caracteres'] }
+      - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "draft" }
+      - label: "Autor"
+        name: "author"
+        widget: "object"
+        fields:
+          - { label: "Nome", name: "name", widget: "string", default: "Equipe Editorial" }
+          - { label: "URL", name: "url", widget: "string", required: false }
+          - { label: "Avatar", name: "avatar", widget: "image", required: false }
+      - { label: "Data de publicação", name: "publish_date", widget: "datetime" }
+      - { label: "Data de atualização", name: "updated_date", widget: "datetime", required: false }
+      - { label: "Canonical URL", name: "canonical_url", widget: "string", required: false }
+      - { label: "No-index", name: "noindex", widget: "boolean", default: false }
+      - { label: "É pilar do silo?", name: "pillar", widget: "boolean", default: false }
+      - { label: "Pilar de (slug do pilar)", name: "pillar_of", widget: "string", required: false }
+      - { label: "Relacionados (slugs)", name: "related", widget: "list", required: false, default: [] }
+      - { label: "Tags", name: "tags", widget: "list", required: false, default: [] }
+      - { label: "Ads habilitados", name: "ad_slots_enabled", widget: "boolean", default: true }
+      - { label: "Disclosure de afiliados", name: "affiliate_disclosure", widget: "boolean", default: false }
+      - label: "FAQ (Rich Snippet Schema.org)"
+        name: "faq"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Pergunta", name: "question", widget: "string" }
+          - { label: "Resposta", name: "answer", widget: "text" }
+      - label: "CTA"
+        name: "cta"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "URL", name: "url", widget: "string" }
+      - label: "Conteúdo"
+        name: "body"
+        widget: "markdown"
+
+  # =========================================================
+  # FINANCE — EN
+  # =========================================================
+  - name: "finance_en"
+    label: "Finance (EN)"
+    label_singular: "Finance Post (EN)"
+    folder: "src/content/finance_en"
+    create: true
+    extension: "mdx"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    preview_path: "en/finance/{{category}}/{{slug}}"
+    fields:
+      - { label: "Language", name: "language", widget: "hidden", default: "en" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["investing", "fixed-income", "stocks", "crypto", "financial-planning"]
+      - label: "Translation of (PT slug)"
+        name: "translation_of"
+        widget: "relation"
+        collection: "finance_pt"
+        search_fields: ["title", "slug"]
+        value_field: "slug"
+        display_fields: ["title"]
+        required: false
+      - { label: "Title", name: "title", widget: "string", pattern: ['.{10,70}', '10 to 70 chars'] }
+      - { label: "Excerpt", name: "excerpt", widget: "text", pattern: ['.{80,200}', '80 to 200 chars'] }
+      - { label: "Featured image", name: "featured_image", widget: "image" }
+      - { label: "Image ALT", name: "featured_image_alt", widget: "string" }
+      - { label: "SEO Title", name: "seo_title", widget: "string", pattern: ['.{10,60}', '10 to 60 chars'] }
+      - { label: "SEO Description", name: "seo_description", widget: "text", pattern: ['.{120,160}', '120 to 160 chars'] }
+      - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "draft" }
+      - label: "Author"
+        name: "author"
+        widget: "object"
+        fields:
+          - { label: "Name", name: "name", widget: "string", default: "Editorial Team" }
+          - { label: "URL", name: "url", widget: "string", required: false }
+          - { label: "Avatar", name: "avatar", widget: "image", required: false }
+      - { label: "Publish date", name: "publish_date", widget: "datetime" }
+      - { label: "Updated date", name: "updated_date", widget: "datetime", required: false }
+      - { label: "Canonical URL", name: "canonical_url", widget: "string", required: false }
+      - { label: "No-index", name: "noindex", widget: "boolean", default: false }
+      - { label: "Silo pillar?", name: "pillar", widget: "boolean", default: false }
+      - { label: "Pillar of (slug)", name: "pillar_of", widget: "string", required: false }
+      - { label: "Related (slugs)", name: "related", widget: "list", required: false, default: [] }
+      - { label: "Tags", name: "tags", widget: "list", required: false, default: [] }
+      - { label: "Ads enabled", name: "ad_slots_enabled", widget: "boolean", default: true }
+      - { label: "Affiliate disclosure", name: "affiliate_disclosure", widget: "boolean", default: false }
+      - label: "FAQ (Schema.org Rich Snippet)"
+        name: "faq"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Question", name: "question", widget: "string" }
+          - { label: "Answer", name: "answer", widget: "text" }
+      - label: "CTA"
+        name: "cta"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "URL", name: "url", widget: "string" }
+      - label: "Body"
+        name: "body"
+        widget: "markdown"
+
+  # =========================================================
+  # FITNESS — PT
+  # =========================================================
+  - name: "fitness_pt"
+    label: "Fitness (PT)"
+    label_singular: "Post de Fitness (PT)"
+    folder: "src/content/fitness_pt"
+    create: true
+    extension: "mdx"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    preview_path: "pt/fitness/{{category}}/{{slug}}"
+    fields:
+      - { label: "Idioma", name: "language", widget: "hidden", default: "pt" }
+      - label: "Categoria"
+        name: "category"
+        widget: "select"
+        options: ["treino", "nutricao", "hipertrofia", "emagrecimento", "suplementacao"]
+      - label: "Tradução de (slug EN)"
+        name: "translation_of"
+        widget: "relation"
+        collection: "fitness_en"
+        search_fields: ["title", "slug"]
+        value_field: "slug"
+        display_fields: ["title"]
+        required: false
+      - { label: "Título", name: "title", widget: "string", pattern: ['.{10,70}', '10 a 70 caracteres'] }
+      - { label: "Resumo (excerpt)", name: "excerpt", widget: "text", pattern: ['.{80,200}', '80 a 200 caracteres'] }
+      - { label: "Imagem destacada", name: "featured_image", widget: "image" }
+      - { label: "ALT da imagem", name: "featured_image_alt", widget: "string" }
+      - { label: "SEO Title", name: "seo_title", widget: "string", pattern: ['.{10,60}', '10 a 60 caracteres'] }
+      - { label: "SEO Description", name: "seo_description", widget: "text", pattern: ['.{120,160}', '120 a 160 caracteres'] }
+      - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "draft" }
+      - label: "Autor"
+        name: "author"
+        widget: "object"
+        fields:
+          - { label: "Nome", name: "name", widget: "string", default: "Equipe Editorial" }
+          - { label: "URL", name: "url", widget: "string", required: false }
+          - { label: "Avatar", name: "avatar", widget: "image", required: false }
+      - { label: "Data de publicação", name: "publish_date", widget: "datetime" }
+      - { label: "Data de atualização", name: "updated_date", widget: "datetime", required: false }
+      - { label: "Canonical URL", name: "canonical_url", widget: "string", required: false }
+      - { label: "No-index", name: "noindex", widget: "boolean", default: false }
+      - { label: "É pilar do silo?", name: "pillar", widget: "boolean", default: false }
+      - { label: "Pilar de (slug do pilar)", name: "pillar_of", widget: "string", required: false }
+      - { label: "Relacionados (slugs)", name: "related", widget: "list", required: false, default: [] }
+      - { label: "Tags", name: "tags", widget: "list", required: false, default: [] }
+      - { label: "Ads habilitados", name: "ad_slots_enabled", widget: "boolean", default: true }
+      - { label: "Disclosure de afiliados", name: "affiliate_disclosure", widget: "boolean", default: false }
+      - label: "FAQ (Rich Snippet Schema.org)"
+        name: "faq"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Pergunta", name: "question", widget: "string" }
+          - { label: "Resposta", name: "answer", widget: "text" }
+      - label: "CTA"
+        name: "cta"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "URL", name: "url", widget: "string" }
+      - label: "Conteúdo"
+        name: "body"
+        widget: "markdown"
+
+  # =========================================================
+  # FITNESS — EN
+  # =========================================================
+  - name: "fitness_en"
+    label: "Fitness (EN)"
+    label_singular: "Fitness Post (EN)"
+    folder: "src/content/fitness_en"
+    create: true
+    extension: "mdx"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    preview_path: "en/fitness/{{category}}/{{slug}}"
+    fields:
+      - { label: "Language", name: "language", widget: "hidden", default: "en" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["training", "nutrition", "hypertrophy", "weight-loss", "supplements"]
+      - label: "Translation of (PT slug)"
+        name: "translation_of"
+        widget: "relation"
+        collection: "fitness_pt"
+        search_fields: ["title", "slug"]
+        value_field: "slug"
+        display_fields: ["title"]
+        required: false
+      - { label: "Title", name: "title", widget: "string", pattern: ['.{10,70}', '10 to 70 chars'] }
+      - { label: "Excerpt", name: "excerpt", widget: "text", pattern: ['.{80,200}', '80 to 200 chars'] }
+      - { label: "Featured image", name: "featured_image", widget: "image" }
+      - { label: "Image ALT", name: "featured_image_alt", widget: "string" }
+      - { label: "SEO Title", name: "seo_title", widget: "string", pattern: ['.{10,60}', '10 to 60 chars'] }
+      - { label: "SEO Description", name: "seo_description", widget: "text", pattern: ['.{120,160}', '120 to 160 chars'] }
+      - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "draft" }
+      - label: "Author"
+        name: "author"
+        widget: "object"
+        fields:
+          - { label: "Name", name: "name", widget: "string", default: "Editorial Team" }
+          - { label: "URL", name: "url", widget: "string", required: false }
+          - { label: "Avatar", name: "avatar", widget: "image", required: false }
+      - { label: "Publish date", name: "publish_date", widget: "datetime" }
+      - { label: "Updated date", name: "updated_date", widget: "datetime", required: false }
+      - { label: "Canonical URL", name: "canonical_url", widget: "string", required: false }
+      - { label: "No-index", name: "noindex", widget: "boolean", default: false }
+      - { label: "Silo pillar?", name: "pillar", widget: "boolean", default: false }
+      - { label: "Pillar of (slug)", name: "pillar_of", widget: "string", required: false }
+      - { label: "Related (slugs)", name: "related", widget: "list", required: false, default: [] }
+      - { label: "Tags", name: "tags", widget: "list", required: false, default: [] }
+      - { label: "Ads enabled", name: "ad_slots_enabled", widget: "boolean", default: true }
+      - { label: "Affiliate disclosure", name: "affiliate_disclosure", widget: "boolean", default: false }
+      - label: "FAQ (Schema.org Rich Snippet)"
+        name: "faq"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Question", name: "question", widget: "string" }
+          - { label: "Answer", name: "answer", widget: "text" }
+      - label: "CTA"
+        name: "cta"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "URL", name: "url", widget: "string" }
+      - label: "Body"
+        name: "body"
+        widget: "markdown"

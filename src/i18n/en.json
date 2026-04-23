@@ -1,0 +1,44 @@
+{
+  "nav": { "home": "Home", "about": "About", "search": "Search" },
+  "cta": {
+    "readMore": "Read more",
+    "seeAll": "See all",
+    "offer": "See offer",
+    "search": "Search the blog"
+  },
+  "post": {
+    "updatedAt": "Updated on",
+    "related": "Related posts",
+    "pillarBadge": "Pillar Guide",
+    "toc": "In this article"
+  },
+  "breadcrumb": { "home": "Home" },
+  "affiliate": {
+    "disclosure": "Some links in this article are affiliate links. We may earn a commission at no extra cost to you."
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "What are you looking for?",
+    "results": "Results",
+    "empty": "No results found.",
+    "loading": "Loading..."
+  },
+  "faq": { "title": "Frequently asked questions" },
+  "meta": {
+    "home": {
+      "title": "Data-driven content on finance and fitness",
+      "desc": "Auditable guides, analyses and strategies on finance and fitness."
+    },
+    "search": {
+      "title": "Search the blog",
+      "desc": "Find guides, analyses and tutorials across the blog."
+    }
+  },
+  "footer": {
+    "sections": "Sections",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "rights": "All rights reserved."
+  }
+}

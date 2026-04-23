@@ -1,0 +1,64 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../components/layout/BaseLayout.astro';
+import CategorySilo from '../../../components/content/CategorySilo.astro';
+import Breadcrumb from '../../../components/content/Breadcrumb.astro';
+import {
+  LOCALES,
+  NICHES,
+  NICHE_LABELS,
+  SITE_URL,
+  otherLocale,
+  type Locale,
+  type Niche,
+} from '../../../consts';
+import { buildSilo } from '../../../lib/silos';
+import { buildNicheHreflang } from '../../../lib/seo';
+import { t } from '../../../i18n/ui';
+
+export const getStaticPaths: GetStaticPaths = () =>
+  LOCALES.flatMap((lang) => NICHES.map((niche) => ({ params: { lang, niche } })));
+
+const lang = Astro.params.lang as Locale;
+const niche = Astro.params.niche as Niche;
+
+const silos = await buildSilo(niche, lang);
+const label = NICHE_LABELS[niche][lang];
+const canonical = `${SITE_URL}/${lang}/${niche}`;
+
+const desc =
+  lang === 'pt'
+    ? `Guias, análises e estratégias baseadas em dados sobre ${label.toLowerCase()}.`
+    : `Data-driven guides, analyses and strategies on ${label.toLowerCase()}.`;
+---
+
+<BaseLayout
+  title={`${label} — YourBrand`}
+  description={desc}
+  canonical={canonical}
+  lang={lang}
+  translationUrl={`/${otherLocale(lang)}/${niche}`}
+  hreflang={buildNicheHreflang(niche)}
+>
+  <Breadcrumb
+    items={[
+      { name: t(lang, 'breadcrumb.home'), url: `${SITE_URL}/${lang}` },
+      { name: label, url: canonical },
+    ]}
+  />
+
+  <h1 class="mt-2 text-4xl font-bold">{label}</h1>
+  <p class="mt-2 text-slate-600">{desc}</p>
+
+  {
+    silos.map((s) => (
+      <CategorySilo
+        category={s.category}
+        pillar={s.pillar}
+        posts={s.posts}
+        lang={lang}
+        niche={niche}
+      />
+    ))
+  }
+</BaseLayout>

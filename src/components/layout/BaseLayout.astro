@@ -1,0 +1,63 @@
+---
+import '../../styles/global.css';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import SEO from '../seo/SEO.astro';
+import { localeTag, type Locale } from '../../consts';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  lang: Locale;
+  image?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  hreflang?: Array<{ lang: string; url: string }>;
+  translationUrl?: string;
+  article?: {
+    publishedTime: string;
+    modifiedTime?: string;
+    author: string;
+    section: string;
+    tags: string[];
+  };
+  pagefindIndex?: boolean;
+}
+
+const p = Astro.props;
+---
+
+<!doctype html>
+<html lang={localeTag(p.lang)}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <SEO
+      title={p.title}
+      description={p.description}
+      canonical={p.canonical}
+      image={p.image}
+      lang={p.lang}
+      ogType={p.ogType}
+      noindex={p.noindex}
+      hreflang={p.hreflang}
+      article={p.article}
+    />
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen bg-white text-slate-900 antialiased">
+    <a href="#main" class="skip-link">{p.lang === 'pt' ? 'Pular para o conteúdo' : 'Skip to content'}</a>
+    <Header lang={p.lang} translationUrl={p.translationUrl} />
+    <main
+      id="main"
+      class="mx-auto max-w-6xl px-4"
+      data-pagefind-body={p.pagefindIndex ? '' : undefined}
+    >
+      <slot />
+    </main>
+    <Footer lang={p.lang} />
+  </body>
+</html>

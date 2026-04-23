@@ -1,0 +1,21 @@
+---
+import { otherLocale, localeTag, type Locale } from '../../consts';
+
+interface Props {
+  current: Locale;
+  translationUrl?: string;
+}
+
+const { current, translationUrl } = Astro.props;
+const other = otherLocale(current);
+const href = translationUrl ?? `/${other}`;
+---
+
+<a
+  href={href}
+  hreflang={localeTag(other)}
+  class="rounded border border-slate-200 px-2 py-1 text-sm font-medium hover:bg-slate-50"
+  aria-label={`Switch to ${other.toUpperCase()}`}
+>
+  {other.toUpperCase()}
+</a>

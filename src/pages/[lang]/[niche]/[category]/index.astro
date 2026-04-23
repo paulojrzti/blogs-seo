@@ -1,0 +1,102 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../components/layout/BaseLayout.astro';
+import Breadcrumb from '../../../../components/content/Breadcrumb.astro';
+import PostCard from '../../../../components/content/PostCard.astro';
+import {
+  LOCALES,
+  NICHES,
+  NICHE_LABELS,
+  CATEGORIES,
+  SITE_URL,
+  otherLocale,
+  type Locale,
+  type Niche,
+} from '../../../../consts';
+import { getByCategory } from '../../../../lib/posts';
+import { buildCategoryHreflang } from '../../../../lib/seo';
+import { categoryLabel, translateCategory } from '../../../../lib/categories';
+import { t } from '../../../../i18n/ui';
+
+export const getStaticPaths: GetStaticPaths = () => {
+  const paths: Array<{ params: { lang: Locale; niche: Niche; category: string } }> = [];
+  for (const lang of LOCALES) {
+    for (const niche of NICHES) {
+      for (const category of CATEGORIES[niche][lang]) {
+        paths.push({ params: { lang, niche, category } });
+      }
+    }
+  }
+  return paths;
+};
+
+const { lang, niche, category } = Astro.params as {
+  lang: Locale;
+  niche: Niche;
+  category: string;
+};
+
+const posts = await getByCategory(niche, lang, category);
+const pillar = posts.find((p) => p.data.pillar);
+const rest = posts.filter((p) => !p.data.pillar);
+const nicheLabel = NICHE_LABELS[niche][lang];
+const label = categoryLabel(niche, lang, category);
+const canonical = `${SITE_URL}/${lang}/${niche}/${category}`;
+
+const otherCatSlug = translateCategory(niche, lang, category, otherLocale(lang));
+const translationUrl = otherCatSlug
+  ? `/${otherLocale(lang)}/${niche}/${otherCatSlug}`
+  : undefined;
+
+const desc =
+  lang === 'pt'
+    ? `Guias, análises e estratégias sobre ${label.toLowerCase()} em ${nicheLabel.toLowerCase()}.`
+    : `Guides, analyses and strategies on ${label.toLowerCase()} in ${nicheLabel.toLowerCase()}.`;
+---
+
+<BaseLayout
+  title={`${label} — ${nicheLabel}`}
+  description={desc}
+  canonical={canonical}
+  lang={lang}
+  translationUrl={translationUrl}
+  hreflang={buildCategoryHreflang(niche, lang, category)}
+>
+  <Breadcrumb
+    items={[
+      { name: t(lang, 'breadcrumb.home'), url: `${SITE_URL}/${lang}` },
+      { name: nicheLabel, url: `${SITE_URL}/${lang}/${niche}` },
+      { name: label, url: canonical },
+    ]}
+  />
+
+  <h1 class="my-4 text-3xl font-bold">{label}</h1>
+  <p class="mb-4 text-slate-600">{desc}</p>
+
+  {
+    pillar && (
+      <section class="mb-8">
+        <p class="mb-2 text-xs uppercase tracking-wider text-blue-600">
+          {t(lang, 'post.pillarBadge')}
+        </p>
+        <PostCard post={pillar} lang={lang} niche={niche} />
+      </section>
+    )
+  }
+
+  {
+    rest.length > 0 ? (
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {rest.map((p) => (
+          <PostCard post={p} lang={lang} niche={niche} />
+        ))}
+      </div>
+    ) : (
+      !pillar && (
+        <p class="text-slate-500">
+          {lang === 'pt' ? 'Nenhum post ainda nesta categoria.' : 'No posts yet in this category.'}
+        </p>
+      )
+    )
+  }
+</BaseLayout>

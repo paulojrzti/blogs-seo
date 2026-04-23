@@ -1,0 +1,75 @@
+---
+import { t } from '../../i18n/ui';
+import type { Locale } from '../../consts';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  rating?: number;
+  price?: string;
+  url: string;
+  cta?: string;
+  badge?: string;
+  lang?: Locale;
+}
+const {
+  title,
+  description,
+  image,
+  rating,
+  price,
+  url,
+  badge,
+  lang = 'pt',
+  cta = t(lang, 'cta.offer'),
+} = Astro.props;
+---
+
+<aside
+  class="not-prose my-8 flex flex-col gap-5 rounded-xl border border-amber-200 bg-amber-50/40 p-5 sm:flex-row sm:items-start"
+  itemscope
+  itemtype="https://schema.org/Product"
+  data-pagefind-ignore
+>
+  {
+    image && (
+      <img
+        src={image}
+        alt={title}
+        class="h-32 w-32 shrink-0 object-contain"
+        loading="lazy"
+        decoding="async"
+        itemprop="image"
+      />
+    )
+  }
+  <div class="flex-1">
+    {
+      badge && (
+        <span class="mb-2 inline-block rounded bg-amber-600 px-2 py-0.5 text-xs text-white">
+          {badge}
+        </span>
+      )
+    }
+    <h3 class="text-lg font-bold" itemprop="name">{title}</h3>
+    {
+      rating && (
+        <div class="my-1 text-sm text-amber-600" aria-label={`${rating}/5`}>
+          {'★'.repeat(Math.round(rating))}
+          {'☆'.repeat(5 - Math.round(rating))}
+        </div>
+      )
+    }
+    {description && <p class="text-sm text-slate-700" itemprop="description">{description}</p>}
+    {price && <p class="mt-2 text-xl font-semibold">{price}</p>}
+    <a
+      href={url}
+      rel="sponsored nofollow noopener"
+      target="_blank"
+      class="mt-3 inline-block rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700"
+    >
+      {cta}
+    </a>
+  </div>
+</aside>

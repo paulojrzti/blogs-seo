@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+}
+
+html {
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid theme('colors.blue.600');
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 50;
+  background: #fff;
+  padding: 0.5rem 1rem;
+  border: 1px solid theme('colors.slate.300');
+}
+
+@layer utilities {
+  .prose :where(img):not(:where([class~='not-prose'] *)) {
+    @apply rounded-lg;
+  }
+}

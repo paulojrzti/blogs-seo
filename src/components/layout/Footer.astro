@@ -1,0 +1,42 @@
+---
+import { NICHES, NICHE_LABELS, SITE_NAME, type Locale } from '../../consts';
+import { t } from '../../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-20 border-t border-slate-200 bg-slate-50">
+  <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 text-sm md:grid-cols-3">
+    <div>
+      <p class="font-bold">{SITE_NAME}</p>
+      <p class="mt-2 text-slate-500">© {year} — {t(lang, 'footer.rights')}</p>
+    </div>
+
+    <div>
+      <p class="mb-2 font-semibold">{t(lang, 'footer.sections')}</p>
+      <ul class="space-y-1">
+        {
+          NICHES.map((n) => (
+            <li>
+              <a href={`/${lang}/${n}`} class="hover:underline">
+                {NICHE_LABELS[n][lang]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <p class="mb-2 font-semibold">{t(lang, 'footer.legal')}</p>
+      <ul class="space-y-1 text-slate-600">
+        <li><a href={`/${lang}/privacy`} class="hover:underline">{t(lang, 'footer.privacy')}</a></li>
+        <li><a href={`/${lang}/terms`} class="hover:underline">{t(lang, 'footer.terms')}</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

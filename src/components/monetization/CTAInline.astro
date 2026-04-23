@@ -1,0 +1,25 @@
+---
+interface Props {
+  label: string;
+  url: string;
+  variant?: 'primary' | 'ghost';
+  external?: boolean;
+}
+const { label, url, variant = 'primary', external = false } = Astro.props;
+const base =
+  'not-prose my-4 inline-flex items-center rounded-lg px-5 py-3 text-sm font-semibold transition';
+const styles =
+  variant === 'primary'
+    ? 'bg-blue-600 text-white hover:bg-blue-700'
+    : 'border border-slate-300 text-slate-900 hover:bg-slate-50';
+---
+
+<a
+  href={url}
+  class={`${base} ${styles}`}
+  rel={external ? 'noopener noreferrer' : undefined}
+  target={external ? '_blank' : undefined}
+  data-pagefind-ignore
+>
+  {label} →
+</a>

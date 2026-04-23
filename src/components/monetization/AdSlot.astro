@@ -1,0 +1,50 @@
+---
+interface Props {
+  position: 'top' | 'middle' | 'bottom';
+  slot?: string;
+}
+const { position, slot = 'default' } = Astro.props;
+const adClient = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const envKey = `PUBLIC_ADSENSE_${position.toUpperCase()}` as const;
+const adSlot = (import.meta.env as Record<string, string | undefined>)[envKey];
+const id = `ad-${position}-${slot}`;
+const pushScript = '(adsbygoogle = window.adsbygoogle || []).push({});';
+---
+
+<div
+  class="not-prose my-8 flex justify-center"
+  data-ad-position={position}
+  data-pagefind-ignore
+>
+  {
+    adClient && adSlot ? (
+      <ins
+        id={id}
+        class="adsbygoogle block w-full"
+        style="display:block"
+        data-ad-client={adClient}
+        data-ad-slot={adSlot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    ) : (
+      <div class="w-full max-w-2xl rounded-lg border border-dashed border-slate-300 p-6 text-center text-xs uppercase tracking-widest text-slate-400">
+        Ad slot · {position}
+      </div>
+    )
+  }
+</div>
+
+{
+  adClient && (
+    <Fragment>
+      <script
+        is:inline
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adClient}`}
+        crossorigin="anonymous"
+      />
+      <script is:inline set:html={pushScript} />
+    </Fragment>
+  )
+}

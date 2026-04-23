@@ -1,0 +1,65 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import CategorySilo from '../../components/content/CategorySilo.astro';
+import {
+  LOCALES,
+  NICHES,
+  NICHE_LABELS,
+  SITE_URL,
+  otherLocale,
+  type Locale,
+  type Niche,
+} from '../../consts';
+import { buildSilo } from '../../lib/silos';
+import { buildRootHreflang } from '../../lib/seo';
+import { t } from '../../i18n/ui';
+
+export const getStaticPaths: GetStaticPaths = () =>
+  LOCALES.map((lang) => ({ params: { lang } }));
+
+const lang = Astro.params.lang as Locale;
+const canonical = `${SITE_URL}/${lang}`;
+
+const bundles = await Promise.all(
+  NICHES.map(async (n) => ({
+    niche: n as Niche,
+    silos: await buildSilo(n as Niche, lang),
+  })),
+);
+---
+
+<BaseLayout
+  title={t(lang, 'meta.home.title')}
+  description={t(lang, 'meta.home.desc')}
+  canonical={canonical}
+  lang={lang}
+  translationUrl={`/${otherLocale(lang)}`}
+  hreflang={buildRootHreflang()}
+>
+  <section class="py-10">
+    <h1 class="text-4xl font-bold">{t(lang, 'meta.home.title')}</h1>
+    <p class="mt-2 text-slate-600">{t(lang, 'meta.home.desc')}</p>
+  </section>
+
+  {
+    bundles.map(({ niche, silos }) => (
+      <section class="py-6">
+        <h2 class="mb-2 text-3xl font-bold">
+          <a href={`/${lang}/${niche}`} class="hover:text-blue-600">
+            {NICHE_LABELS[niche][lang]}
+          </a>
+        </h2>
+        {silos.map((s) => (
+          <CategorySilo
+            category={s.category}
+            pillar={s.pillar}
+            posts={s.posts}
+            lang={lang}
+            niche={niche}
+          />
+        ))}
+      </section>
+    ))
+  }
+</BaseLayout>

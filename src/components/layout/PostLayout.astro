@@ -1,0 +1,134 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../content/Breadcrumb.astro';
+import RelatedPosts from '../content/RelatedPosts.astro';
+import SchemaArticle from '../seo/SchemaArticle.astro';
+import SchemaBreadcrumb from '../seo/SchemaBreadcrumb.astro';
+import AdSlot from '../monetization/AdSlot.astro';
+import {
+  SITE_NAME,
+  SITE_URL,
+  NICHE_LABELS,
+  localeTag,
+  type Locale,
+  type Niche,
+} from '../../consts';
+import { t } from '../../i18n/ui';
+import { postUrl } from '../../lib/seo';
+import { categoryLabel } from '../../lib/categories';
+import type { Post } from '../../lib/posts';
+
+interface Props {
+  post: Post;
+  niche: Niche;
+  lang: Locale;
+  related: Post[];
+  translationUrl?: string;
+  hreflang: Array<{ lang: string; url: string }>;
+}
+const { post, niche, lang, related, translationUrl, hreflang } = Astro.props;
+
+const canonical =
+  post.data.canonical_url ?? postUrl(niche, lang, post.data.category, post.slug);
+
+const nicheLabel = NICHE_LABELS[niche][lang];
+const catLabel = categoryLabel(niche, lang, post.data.category);
+
+const crumbs = [
+  { name: t(lang, 'breadcrumb.home'), url: `${SITE_URL}/${lang}` },
+  { name: nicheLabel, url: `${SITE_URL}/${lang}/${niche}` },
+  { name: catLabel, url: `${SITE_URL}/${lang}/${niche}/${post.data.category}` },
+  { name: post.data.title, url: canonical },
+];
+
+const dateFmt = new Intl.DateTimeFormat(localeTag(lang), { dateStyle: 'long' });
+
+const featuredSrc =
+  typeof post.data.featured_image === 'string'
+    ? post.data.featured_image
+    : post.data.featured_image.src;
+---
+
+<BaseLayout
+  title={post.data.seo_title}
+  description={post.data.seo_description}
+  canonical={canonical}
+  lang={lang}
+  image={featuredSrc}
+  noindex={post.data.noindex}
+  hreflang={hreflang}
+  translationUrl={translationUrl}
+  ogType="article"
+  pagefindIndex
+  article={{
+    publishedTime: post.data.publish_date.toISOString(),
+    modifiedTime: post.data.updated_date?.toISOString(),
+    author: post.data.author.name,
+    section: post.data.category,
+    tags: post.data.tags,
+  }}
+>
+  <Breadcrumb items={crumbs} />
+
+  <article
+    class="prose prose-slate mx-auto max-w-3xl py-6 lg:prose-lg"
+    data-pagefind-meta={`category:${post.data.category}, niche:${niche}, lang:${lang}`}
+  >
+    <h1>{post.data.title}</h1>
+
+    <p class="not-prose text-sm text-slate-500">
+      {post.data.author.name} ·
+      <time datetime={post.data.publish_date.toISOString()}>
+        {dateFmt.format(post.data.publish_date)}
+      </time>
+      {
+        post.data.updated_date && (
+          <>
+            {' '}
+            · {t(lang, 'post.updatedAt')} {dateFmt.format(post.data.updated_date)}
+          </>
+        )
+      }
+    </p>
+
+    <Image
+      src={post.data.featured_image}
+      alt={post.data.featured_image_alt}
+      widths={[480, 800, 1200]}
+      sizes="(max-width: 768px) 100vw, 800px"
+      loading="eager"
+      decoding="async"
+      class="rounded-lg"
+    />
+
+    {
+      post.data.affiliate_disclosure && (
+        <aside class="not-prose my-4 border-l-2 border-slate-200 pl-3 text-xs italic text-slate-500">
+          {t(lang, 'affiliate.disclosure')}
+        </aside>
+      )
+    }
+
+    {post.data.ad_slots_enabled && <AdSlot position="top" />}
+    <slot />
+    {post.data.ad_slots_enabled && <AdSlot position="bottom" />}
+  </article>
+
+  <RelatedPosts posts={related} lang={lang} niche={niche} />
+
+  <SchemaArticle
+    headline={post.data.title}
+    description={post.data.seo_description}
+    url={canonical}
+    image={featuredSrc}
+    datePublished={post.data.publish_date.toISOString()}
+    dateModified={post.data.updated_date?.toISOString()}
+    authorName={post.data.author.name}
+    authorUrl={post.data.author.url}
+    publisherName={SITE_NAME}
+    publisherLogo={`${SITE_URL}/favicon.svg`}
+    inLanguage={localeTag(lang)}
+  />
+  <SchemaBreadcrumb items={crumbs} />
+</BaseLayout>

@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+import type { Post } from '../../lib/posts';
+import { categoryLabel } from '../../lib/categories';
+import type { Locale, Niche } from '../../consts';
+
+interface Props {
+  post: Post;
+  lang: Locale;
+  niche: Niche;
+}
+const { post, lang, niche } = Astro.props;
+const href = `/${lang}/${niche}/${post.data.category}/${post.slug}`;
+---
+
+<article class="group overflow-hidden rounded-lg border border-slate-200 transition hover:shadow-md">
+  <a href={href} class="block">
+    <Image
+      src={post.data.featured_image}
+      alt={post.data.featured_image_alt}
+      widths={[320, 480, 640]}
+      sizes="(max-width: 768px) 100vw, 33vw"
+      class="aspect-video w-full object-cover"
+      loading="lazy"
+      decoding="async"
+    />
+    <div class="space-y-2 p-4">
+      <p class="text-xs font-medium uppercase tracking-wide text-blue-600">
+        {categoryLabel(niche, lang, post.data.category)}
+      </p>
+      <h3 class="font-semibold leading-snug group-hover:text-blue-600">{post.data.title}</h3>
+      <p class="line-clamp-3 text-sm text-slate-600">{post.data.excerpt}</p>
+    </div>
+  </a>
+</article>
